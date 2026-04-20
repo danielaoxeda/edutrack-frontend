@@ -1,75 +1,57 @@
-# React + TypeScript + Vite
+# EduTrack — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Plataforma académica para estudiantes, docentes y administradores.
+> Construida con React, TypeScript y Tailwind CSS.
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4?logo=tailwindcss)
+![GCP](https://img.shields.io/badge/Despliegue-GCP_App_Engine-4285F4?logo=googlecloud)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📌 Sobre el proyecto
 
-## React Compiler
+EduTrack es una plataforma de gestión académica desarrollada como parte del
+curso de **Desarrollo Web Integrado**. Este repositorio contiene la aplicación
+frontend, que consume la API REST de EduTrack.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## ✨ Características
 
-Note: This will impact Vite dev & build performances.
+- 🔐 Autenticación con JWT y rutas protegidas
+- 👨‍🎓 **Estudiante** — ver notas, tareas y asistencia
+- 👨‍🏫 **Docente** — gestionar notas, tareas y asistencia de estudiantes
+- 🛠️ **Administrador** — gestionar usuarios y configuración del sistema
+- 📊 Dashboards personalizados por rol con datos en tiempo real
+- 📱 Interfaz completamente responsiva con Tailwind CSS
 
-## Expanding the ESLint configuration
+## 🛠️ Tecnologías utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Tecnología       | Propósito                     |
+|------------------|-------------------------------|
+| React 18         | Framework de interfaz de usuario |
+| TypeScript       | Desarrollo con tipos seguros   |
+| Tailwind CSS     | Estilización basada en utilidades |
+| React Router     | Navegación en el cliente       |
+| Axios            | Cliente HTTP para llamadas a API |
+| Context API      | Gestión de autenticación y estado global |
+| GCP App Engine   | Despliegue en la nube         |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Cómo empezar
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Requisitos previos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Node.js >= 18
+- npm o yarn
+- Backend de EduTrack corriendo localmente o desplegado
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Instalación
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Clonar el repositorio
+git clone https://github.com/danielaoxeda/edutrack-frontend.git
+cd edutrack-frontend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
