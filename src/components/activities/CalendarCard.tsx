@@ -19,6 +19,7 @@ function CalendarCard() {
         28,
         29,
         30,
+        31,
         1,
         2,
         3,
@@ -42,7 +43,7 @@ function CalendarCard() {
             {/* HEADER */}
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold">
-                    Calendario Octubre
+                    Calendario Mayo
                 </h3>
 
                 <div className="flex items-center gap-2">

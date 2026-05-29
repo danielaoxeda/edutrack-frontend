@@ -9,13 +9,13 @@ function ProgressCard() {
                 </div>
 
                 <span className="text-sm font-semibold text-blue-700">
-          Semestre 2025-2
+          Semestre 2026-1
         </span>
             </div>
 
             <div className="mt-10">
                 <h2 className="text-5xl font-extrabold">
-                    85%
+                    60%
                 </h2>
 
                 <p className="text-slate-500 mt-2">
