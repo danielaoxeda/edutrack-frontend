@@ -3,21 +3,16 @@ const Navbar = () => {
         <nav className="bg-white border-b fixed top-0 left-0 w-full z-50">
             <div className="flex justify-between items-center px-10 h-16 max-w-[1440px] mx-auto">
                 <h1 className="text-2xl font-bold text-blue-900">
-                    EduTrack
+                    <a href="#">
+                        EduTrack
+                    </a>
                 </h1>
 
                 <div className="hidden md:flex gap-8">
                     <a href="#" className="hover:text-blue-900">
-                        Features
+                        Home
                     </a>
 
-                    <a href="#" className="hover:text-blue-900">
-                        Academics
-                    </a>
-
-                    <a href="#" className="hover:text-blue-900">
-                        Support
-                    </a>
                 </div>
 
                 <div className="flex gap-4">
