@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const HomePage: React.FC = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const { hash } = useLocation();
 
@@ -95,7 +97,14 @@ const HomePage: React.FC = () => {
                                     className="space-y-6"
                                     onSubmit={(event) => {
                                         event.preventDefault();
-                                        navigate("/dashboard-estudiante");
+                                        const emailLower = email.toLowerCase();
+                                        if (emailLower.includes("admin") || emailLower.includes("administrador")) {
+                                            navigate("/dashboard-admin");
+                                        } else if (emailLower.includes("teacher") || emailLower.includes("docente") || emailLower.includes("profesor")) {
+                                            navigate("/dashboard-docente");
+                                        } else {
+                                            navigate("/dashboard-estudiante");
+                                        }
                                     }}
                                 >
                                     <div className="space-y-1">
@@ -103,9 +112,12 @@ const HomePage: React.FC = () => {
                                         <div className="relative">
                                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">mail</span>
                                             <input
-                                                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900"
-                                                placeholder="usuario@edutrack.edu"
+                                                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900 font-body-md"
+                                                placeholder="usuario@edutrack.edu (ej. docente@edutrack.edu)"
                                                 type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -118,9 +130,12 @@ const HomePage: React.FC = () => {
                                         <div className="relative">
                                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">lock</span>
                                             <input
-                                                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900"
+                                                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900 font-body-md"
                                                 placeholder="••••••••"
                                                 type="password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -133,6 +148,10 @@ const HomePage: React.FC = () => {
                                     <button className="w-full rounded-lg bg-blue-900 py-3 text-sm font-medium text-white shadow-md transition-transform hover:scale-[1.02] active:scale-95" type="submit">
                                         Iniciar Sesión Segura
                                     </button>
+
+                                    <p className="text-center text-[11px] text-slate-400 mt-4 leading-normal">
+                                        Tip: Usa <span className="font-semibold text-blue-700">"docente"</span> para Profesor, o <span className="font-semibold text-blue-700">"admin"</span> para Administrador.
+                                    </p>
                                 </form>
 
                                 <div className="mt-8 border-t border-slate-200 pt-6 text-center">
