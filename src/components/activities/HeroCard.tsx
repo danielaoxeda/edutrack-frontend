@@ -2,7 +2,7 @@ import { Upload } from "lucide-react";
 
 function HeroCard() {
     return (
-        <div className="relative overflow-hidden rounded-3xl bg-blue-700 text-white p-8 min-h-[320px] flex flex-col justify-between">
+        <div className="relative overflow-hidden rounded-3xl bg-blue-700 text-white p-8 min-h-80 flex flex-col justify-between">
             <div>
         <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase">
           Próximo vencimiento
@@ -12,7 +12,7 @@ function HeroCard() {
                     Desarrollo Web Full Stack
                 </h2>
 
-                <p className="text-white/80 max-w-xl">
+                <p className="text-white/80 max-w-144">
                     Proyecto Final: Implementación de
                     Microservicios con Node.js y React.
                 </p>
