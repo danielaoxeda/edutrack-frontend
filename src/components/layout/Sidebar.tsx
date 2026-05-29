@@ -2,11 +2,9 @@ import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import {
+    House,
     LayoutDashboard,
     FileText,
-    GraduationCap,
-    Calendar,
-    Settings,
     HelpCircle,
     LogOut,
     Menu,
@@ -20,11 +18,10 @@ interface MenuItem {
 }
 
 const menu: MenuItem[] = [
+    { label: "Inicio", icon: House, path: "/" },
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-estudiante" },
     { label: "Actividades", icon: FileText, path: "/actividades-estudiante" },
-    { label: "Certificaciones", icon: GraduationCap, path: "/certificaciones-estudiante" },
-    { label: "Calendario", icon: Calendar, path: "/calendario-estudiante" },
-    { label: "Configuración", icon: Settings, path: "/configuracion-estudiante" },
+    { label: "Acceso", icon: LogOut, path: "/auth" },
 ];
 
 function Sidebar() {
@@ -100,15 +97,15 @@ function Sidebar() {
 
                 {/* FOOTER */}
                 <div className="mt-8 border-t border-slate-700 pt-6 space-y-2">
-                    <button className="w-full flex items-center gap-3 text-slate-300 hover:text-white transition">
+                    <Link to="/" className="w-full flex items-center gap-3 text-slate-300 hover:text-white transition">
                         <HelpCircle size={18} />
                         <span>Ayuda</span>
-                    </button>
+                    </Link>
 
-                    <button className="w-full flex items-center gap-3 text-slate-300 hover:text-white transition">
+                    <Link to="/auth" className="w-full flex items-center gap-3 text-slate-300 hover:text-white transition">
                         <LogOut size={18} />
                         <span>Cerrar sesión</span>
-                    </button>
+                    </Link>
                 </div>
             </aside>
         </>
