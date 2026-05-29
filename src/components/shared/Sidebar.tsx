@@ -17,14 +17,19 @@ interface MenuItem {
     path: string;
 }
 
-const menu: MenuItem[] = [
+interface SidebarProps {
+    menu?: MenuItem[];
+    title?: string;
+}
+
+const defaultMenu: MenuItem[] = [
     { label: "Inicio", icon: House, path: "/" },
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-estudiante" },
     { label: "Actividades", icon: FileText, path: "/actividades-estudiante" },
     { label: "Acceso", icon: LogOut, path: "/auth" },
 ];
 
-function Sidebar() {
+function Sidebar({ menu = defaultMenu, title = "EduTrack" }: SidebarProps) {
     const [open, setOpen] = useState(false);
     const { pathname } = useLocation();
 
@@ -60,7 +65,7 @@ function Sidebar() {
             >
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-xl font-bold">EduTrack</h2>
+                    <h2 className="text-xl font-bold">{title}</h2>
                     <button
                         onClick={() => setOpen(false)}
                         className="lg:hidden"
