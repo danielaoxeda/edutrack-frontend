@@ -18,7 +18,7 @@ const AuthTabs = () => {
                             : "text-gray-500"
                     }`}
                 >
-                    Login
+                    Iniciar sesión
                 </button>
 
                 <button
@@ -29,7 +29,7 @@ const AuthTabs = () => {
                             : "text-gray-500"
                     }`}
                 >
-                    Register
+                    Registrarse
                 </button>
             </div>
 

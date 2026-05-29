@@ -1,33 +1,42 @@
 import Input from "../ui/Input";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+    const navigate = useNavigate();
+
     return (
         <div>
             <div className="mb-8">
                 <h2 className="text-3xl font-semibold mb-2">
-                    Welcome Back
+                    Bienvenido de nuevo
                 </h2>
 
                 <p className="text-gray-500">
-                    Access your institutional dashboard.
+                    Accede a tu panel institucional.
                 </p>
             </div>
 
-            <form className="space-y-4">
+            <form
+                className="space-y-4"
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    navigate("/dashboard-estudiante");
+                }}
+            >
                 <Input
-                    label="Institutional Email"
+                    label="Correo institucional"
                     type="email"
-                    placeholder="name@university.edu"
+                    placeholder="nombre@universidad.edu"
                 />
 
                 <Input
-                    label="Password"
+                    label="Contraseña"
                     type="password"
                     placeholder="••••••••"
                 />
 
-                <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:opacity-90">
-                    Login
+                <button className="w-full bg-blue-900 text-white py-3 rounded-lg hover:opacity-90" type="submit">
+                    Iniciar sesión
                 </button>
             </form>
         </div>
