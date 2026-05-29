@@ -8,15 +8,22 @@ import {
 import DashboardEstudiantePage from "./pages/StudentDashboard";
 import ActivitiesPage from "./pages/ActivitiesPage";
 import AuthPage from "./pages/AuthPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
 
-                {/* AUTH */}
+                {/* HOME */}
                 <Route
                     path="/"
+                    element={<HomePage />}
+                />
+
+                {/* AUTH (moved) */}
+                <Route
+                    path="/auth"
                     element={<AuthPage />}
                 />
 

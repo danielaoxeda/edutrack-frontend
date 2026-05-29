@@ -6,6 +6,7 @@ import AssignmentCard from "../components/dashboard/AssignmentCard";
 
 import { courses, assignments } from "../data/studentDashboardData";
 import StudentLayout from "../components/layout/StudentLayout";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
     return (
@@ -27,9 +28,9 @@ function Dashboard() {
                                 Cursos activos
                             </h2>
 
-                            <button className="text-blue-700 font-medium hover:underline">
+                            <Link to="/actividades-estudiante" className="text-blue-700 font-medium hover:underline">
                                 Ver todo
-                            </button>
+                            </Link>
                         </div>
 
                         <div className="space-y-4">
