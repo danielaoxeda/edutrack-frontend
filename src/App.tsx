@@ -8,6 +8,7 @@ import {
 import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
 import ActivitiesPage from "./features/student/pages/ActivitiesPage";
 import SettingsPage from "./features/student/pages/SettingsPage.tsx";
+import AdminDashboardPage from "./features/admin/pages/AdminDashboard";
 import AuthPage from "./pages/AuthPage";
 
 function App() {
@@ -25,6 +26,10 @@ function App() {
                 <Route
                     path="/dashboard-estudiante"
                     element={<DashboardEstudiantePage />}
+                />
+                <Route
+                    path="/dashboard-admin"
+                    element={<AdminDashboardPage />}
                 />
 
                 {/* ACTIVIDADES */}
