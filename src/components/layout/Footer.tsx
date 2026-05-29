@@ -7,9 +7,16 @@ function Footer() {
                 </p>
 
                 <div className="flex gap-4 text-slate-500">
-                    <button></button>
                     <button>Portal EduTrack</button>
-                    <button>Contacto</button>
+
+                    <a
+                        href="https://wa.me/960648959"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-green-600 transition-colors"
+                    >
+                        Contacto
+                    </a>
                 </div>
             </div>
         </footer>
