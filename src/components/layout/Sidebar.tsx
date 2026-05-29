@@ -21,10 +21,10 @@ interface MenuItem {
 
 const menu: MenuItem[] = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-estudiante" },
-    { label: "Actividades", icon: FileText, path: "/actividades" },
-    { label: "Certificaciones", icon: GraduationCap, path: "/certificaciones" },
-    { label: "Calendario", icon: Calendar, path: "/calendario" },
-    { label: "Configuración", icon: Settings, path: "/configuracion" },
+    { label: "Actividades", icon: FileText, path: "/actividades-estudiante" },
+    { label: "Certificaciones", icon: GraduationCap, path: "/certificaciones-estudiante" },
+    { label: "Calendario", icon: Calendar, path: "/calendario-estudiante" },
+    { label: "Configuración", icon: Settings, path: "/configuracion-estudiante" },
 ];
 
 function Sidebar() {

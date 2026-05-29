@@ -21,13 +21,7 @@ function SupportCard() {
                 {/* AVATARES */}
                 <div className="flex -space-x-3">
                     <img
-                        src="/tutor1.png"
-                        alt="Tutor"
-                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                    />
-
-                    <img
-                        src="/tutor2.png"
+                        src="/tutor1.jpg"
                         alt="Tutor"
                         className="w-10 h-10 rounded-full border-2 border-white object-cover"
                     />
