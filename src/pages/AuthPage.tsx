@@ -1,6 +1,6 @@
-import Navbar from "../components/layout/NavBar";
-import Footer from "../components/layout/Footer";
-import HeroSection from "../components/layout/HeroSection";
+import Navbar from "../components/auth/NavBar";
+import Footer from "../components/shared/Footer";
+import HeroSection from "../components/auth/HeroSection";
 import AuthTabs from "../components/auth/AuthTabs";
 
 const AuthPage = () => {

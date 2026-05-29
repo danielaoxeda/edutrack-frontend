@@ -1,11 +1,11 @@
-import StatsCard from "../components/dashboard/StatsCards";
-import AttendanceCard from "../components/dashboard/AttendanceCard";
-import QuickActions from "../components/dashboard/QuickActions";
-import CourseCard from "../components/dashboard/CourseCards";
-import AssignmentCard from "../components/dashboard/AssignmentCard";
+import StatsCard from "../components/dashboard/StatsCards.tsx";
+import AttendanceCard from "../components/dashboard/AttendanceCard.tsx";
+import QuickActions from "../components/dashboard/QuickActions.tsx";
+import CourseCard from "../components/dashboard/CourseCards.tsx";
+import AssignmentCard from "../components/dashboard/AssignmentCard.tsx";
 
-import { courses, assignments } from "../data/studentDashboardData";
-import StudentLayout from "../components/layout/StudentLayout";
+import { courses, assignments } from "../data/student/studentDashboardData.ts";
+import StudentLayout from "../../../layout/StudentLayout.tsx";
 
 function Dashboard() {
     return (

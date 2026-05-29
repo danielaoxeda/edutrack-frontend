@@ -5,8 +5,9 @@ import {
     Navigate,
 } from "react-router-dom";
 
-import DashboardEstudiantePage from "./pages/StudentDashboard";
-import ActivitiesPage from "./pages/ActivitiesPage";
+import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
+import ActivitiesPage from "./features/student/pages/ActivitiesPage";
+import SettingsPage from "./features/student/pages/SettingsPage.tsx";
 import AuthPage from "./pages/AuthPage";
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
                     path="/actividades-estudiante"
                     element={<ActivitiesPage />}
                 />
+                <Route
+                    path="/configuracion-estudiante"
+                    element={<SettingsPage />}
+                />
+
 
                 {/* REDIRECT */}
                 <Route
