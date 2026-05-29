@@ -4,15 +4,15 @@ import {
     ListTodo,
 } from "lucide-react";
 
-import HeroCard from "../components/activities/HeroCard";
-import ProgressCard from "../components/activities/ProgressCard";
-import ActivityCard from "../components/activities/ActivityCard";
-import CalendarCard from "../components/activities/CalendarCard";
-import SupportCard from "../components/activities/SupportCard";
+import HeroCard from "../components/activities/HeroCard.tsx";
+import ProgressCard from "../components/activities/ProgressCard.tsx";
+import ActivityCard from "../components/activities/ActivityCard.tsx";
+import CalendarCard from "../components/activities/CalendarCard.tsx";
+import SupportCard from "../components/activities/SupportCard.tsx";
 
-import { activities } from "../data/activitiesData";
+import { activities } from "../data/student/activitiesData.ts";
 
-import StudentLayout from "../components/layout/StudentLayout";
+import StudentLayout from "../../../layout/StudentLayout.tsx";
 
 function ActivitiesPage() {
     return (

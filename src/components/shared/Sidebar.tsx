@@ -2,32 +2,27 @@ import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import {
-    LayoutDashboard,
-    FileText,
-    GraduationCap,
-    Calendar,
-    Settings,
     HelpCircle,
     LogOut,
     Menu,
     X,
 } from "lucide-react";
 
-interface MenuItem {
+export interface MenuItem {
     label: string;
     icon: LucideIcon;
     path: string;
 }
 
-const menu: MenuItem[] = [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-estudiante" },
-    { label: "Actividades", icon: FileText, path: "/actividades-estudiante" },
-    { label: "Certificaciones", icon: GraduationCap, path: "/certificaciones-estudiante" },
-    { label: "Calendario", icon: Calendar, path: "/calendario-estudiante" },
-    { label: "Configuración", icon: Settings, path: "/configuracion-estudiante" },
-];
+interface SidebarProps {
+    menu: MenuItem[];
+    title?: string;
+}
 
-function Sidebar() {
+function Sidebar({
+                     menu,
+                     title = "EduTrack",
+                 }: SidebarProps) {
     const [open, setOpen] = useState(false);
     const { pathname } = useLocation();
 
@@ -63,7 +58,10 @@ function Sidebar() {
             >
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-xl font-bold">EduTrack</h2>
+                    <h2 className="text-xl font-bold">
+                        {title}
+                    </h2>
+
                     <button
                         onClick={() => setOpen(false)}
                         className="lg:hidden"
@@ -76,14 +74,12 @@ function Sidebar() {
                 <nav className="space-y-2 flex-1">
                     {menu.map((item) => {
                         const Icon = item.icon;
-                        // ✅ Estado activo dinámico según la URL
                         const isActive = pathname === item.path;
 
                         return (
                             <Link
                                 key={item.label}
                                 to={item.path}
-                                // ✅ Cierra el menú en móvil al hacer clic
                                 onClick={() => setOpen(false)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                                     isActive
