@@ -1,0 +1,9 @@
+type(scope): short summary
+
+# Blank line, then a more detailed explanation of the change. Explain the why, not the how.
+# Use imperative mood: "Add", "Fix", "Remove".
+# Wrap lines at ~72 characters.
+
+# Footer (optional): related issues or breaking changes.
+# Example: BREAKING CHANGE: the API for X changed.
+

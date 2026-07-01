@@ -55,3 +55,12 @@ npm install
 
 # Configurar variables de entorno
 cp .env.example .env
+
+
+Consejos para commits atómicos:
+
+- Haz un commit por cada pequeña funcionalidad o cambio lógico (por ejemplo: "feat(auth): add email validation").
+- Usa `git add -p` para añadir solo los fragmentos relacionados y mantener los commits pequeños.
+- Mensaje de ejemplo: `feat(login): validate email format`.
+
+Si el hook detecta un mensaje que no cumple el patrón, rechazará el commit y mostrará la plantilla de ayuda.

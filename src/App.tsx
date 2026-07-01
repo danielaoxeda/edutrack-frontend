@@ -8,6 +8,7 @@ import {
 import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
 import ActivitiesPage from "./features/student/pages/ActivitiesPage";
 import SettingsPage from "./features/student/pages/SettingsPage.tsx";
+import AdminDashboardPage from "./features/admin/pages/AdminDashboard";
 import TeacherDashboardPage from "./features/teacher/pages/TeacherDashboard";
 import TeacherCoursesPage from "./features/teacher/pages/TeacherCourses";
 import TeacherStudentsPage from "./features/teacher/pages/TeacherStudents";
@@ -16,15 +17,22 @@ import TeacherGradesPage from "./features/teacher/pages/TeacherGrades";
 import TeacherAttendancePage from "./features/teacher/pages/TeacherAttendance";
 import TeacherMessagesPage from "./features/teacher/pages/TeacherMessages";
 import AuthPage from "./pages/AuthPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
 
-                {/* AUTH */}
+                {/* HOME */}
                 <Route
                     path="/"
+                    element={<HomePage />}
+                />
+
+                {/* AUTH (moved) */}
+                <Route
+                    path="/auth"
                     element={<AuthPage />}
                 />
 
@@ -32,6 +40,10 @@ function App() {
                 <Route
                     path="/dashboard-estudiante"
                     element={<DashboardEstudiantePage />}
+                />
+                <Route
+                    path="/dashboard-admin"
+                    element={<AdminDashboardPage />}
                 />
 
                 {/* ACTIVIDADES */}

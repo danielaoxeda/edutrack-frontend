@@ -1,11 +1,12 @@
-import StatsCard from "../components/dashboard/StatsCards.tsx";
-import AttendanceCard from "../components/dashboard/AttendanceCard.tsx";
-import QuickActions from "../components/dashboard/QuickActions.tsx";
-import CourseCard from "../components/dashboard/CourseCards.tsx";
-import AssignmentCard from "../components/dashboard/AssignmentCard.tsx";
+import StatsCard from "../components/dashboard/StatsCards";
+import AttendanceCard from "../components/dashboard/AttendanceCard";
+import QuickActions from "../components/dashboard/QuickActions";
+import CourseCard from "../components/dashboard/CourseCards";
+import AssignmentCard from "../components/dashboard/AssignmentCard";
 
-import { courses, assignments } from "../data/student/studentDashboardData.ts";
+import { courses, assignments } from "../data/student/studentDashboardData";
 import StudentLayout from "../../../layout/StudentLayout.tsx";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
     return (
@@ -27,9 +28,9 @@ function Dashboard() {
                                 Cursos activos
                             </h2>
 
-                            <button className="text-blue-700 font-medium hover:underline">
+                            <Link to="/actividades-estudiante" className="text-blue-700 font-medium hover:underline">
                                 Ver todo
-                            </button>
+                            </Link>
                         </div>
 
                         <div className="space-y-4">

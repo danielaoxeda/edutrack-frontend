@@ -11,7 +11,9 @@ const LoginForm = () => {
         e.preventDefault();
         
         const emailLower = email.toLowerCase();
-        if (emailLower.includes("teacher") || emailLower.includes("docente")) {
+        if (emailLower.includes("admin") || emailLower.includes("administrador")) {
+            navigate("/dashboard-admin");
+        } else if (emailLower.includes("teacher") || emailLower.includes("docente") || emailLower.includes("profesor")) {
             navigate("/dashboard-docente");
         } else {
             navigate("/dashboard-estudiante");
@@ -22,26 +24,26 @@ const LoginForm = () => {
         <div>
             <div className="mb-8">
                 <h2 className="text-3xl font-semibold mb-2 text-slate-800">
-                    Welcome Back
+                    Bienvenido de nuevo
                 </h2>
 
                 <p className="text-gray-500">
-                    Access your institutional dashboard.
+                    Accede a tu panel institucional.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
-                    label="Institutional Email"
+                    label="Correo institucional"
                     type="email"
-                    placeholder="teacher@university.edu o student@university.edu"
+                    placeholder="nombre@universidad.edu (ej. docente@universidad.edu o admin@universidad.edu)"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
 
                 <Input
-                    label="Password"
+                    label="Contraseña"
                     type="password"
                     placeholder="••••••••"
                     value={password}
@@ -53,11 +55,11 @@ const LoginForm = () => {
                     type="submit"
                     className="w-full bg-[#1e3a8a] text-white py-3 rounded-lg hover:bg-blue-900 transition-colors font-medium shadow-sm"
                 >
-                    Login
+                    Iniciar sesión
                 </button>
 
-                <p className="text-center text-xs text-slate-400 mt-4">
-                    Tip: Usa un correo con <span className="font-semibold text-blue-700">"teacher"</span> o <span className="font-semibold text-blue-700">"docente"</span> para entrar como Profesor.
+                <p className="text-center text-xs text-slate-400 mt-4 leading-normal">
+                    Tip: Usa un correo con <span className="font-semibold text-blue-700">"docente"</span> o <span className="font-semibold text-blue-700">"teacher"</span> para entrar como Profesor, o <span className="font-semibold text-blue-700">"admin"</span> para Administrador.
                 </p>
             </form>
         </div>

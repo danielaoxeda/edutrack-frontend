@@ -1,15 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Bell,
-    Search,
-    ChevronDown,
-    GraduationCap,
-    User,
-    ShieldCheck,
-} from "lucide-react";
+import { Bell, Search, ChevronDown, GraduationCap, User, ShieldCheck } from "lucide-react";
 
-function Header() {
+function AdminHeader() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -27,9 +20,9 @@ function Header() {
     }, []);
 
     const roles = [
-        { name: "Estudiante", path: "/dashboard-estudiante", icon: GraduationCap, color: "text-blue-600 bg-blue-50" },
-        { name: "Docente", path: "/dashboard-docente", icon: User, color: "text-emerald-600 bg-emerald-50" },
-        { name: "Administrador", path: "/dashboard-admin", icon: ShieldCheck, color: "text-purple-600 bg-purple-50" }
+        { name: "Estudiante", path: "/dashboard-estudiante", icon: GraduationCap },
+        { name: "Docente", path: "/dashboard-docente", icon: User },
+        { name: "Administrador", path: "/dashboard-admin", icon: ShieldCheck }
     ];
 
     return (
@@ -38,7 +31,7 @@ function Header() {
                 <div className="flex items-center gap-4">
                     <img
                         src="/edutrack.logo.png"
-                        alt="EduTrack Logo"
+                        alt="EduTrack Pro Logo"
                         className="h-10 w-auto object-contain"
                     />
 
@@ -61,6 +54,7 @@ function Header() {
                         <Bell size={20} />
                     </button>
 
+                    {/* PROFILE CARD WITH ROLE SWITCHER */}
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
@@ -68,21 +62,22 @@ function Header() {
                         >
                             <img
                                 src="/user.png"
-                                alt="user"
+                                alt="Admin profile"
                                 className="w-9 h-9 rounded-full"
                             />
 
                             <div className="flex flex-col leading-tight">
                                 <span className="font-medium text-slate-800">
-                                    Adriano Bautista
+                                    Admin User
                                 </span>
                                 <span className="text-xs text-slate-500">
-                                    Estudiante
+                                    Super Administrador
                                 </span>
                             </div>
                             <ChevronDown size={14} className={`text-slate-500 ml-1 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
                         </button>
 
+                        {/* Dropdown Menu */}
                         {isOpen && (
                             <div className="absolute right-0 mt-2 w-64 bg-white/95 backdrop-blur-md border border-slate-100 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                 <div className="px-3 py-2 mb-2 border-b border-slate-100">
@@ -91,7 +86,7 @@ function Header() {
                                 <div className="space-y-1">
                                     {roles.map((role) => {
                                         const Icon = role.icon;
-                                        const isCurrent = role.name === "Estudiante";
+                                        const isCurrent = role.name === "Administrador";
                                         return (
                                             <button
                                                 key={role.name}
@@ -101,18 +96,18 @@ function Header() {
                                                 }}
                                                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                                                     isCurrent
-                                                        ? "bg-blue-50 text-blue-700"
+                                                        ? "bg-purple-50 text-purple-700"
                                                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                                 }`}
                                             >
                                                 <div className="flex items-center gap-2.5">
-                                                    <span className={`p-1.5 rounded-lg ${isCurrent ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-500"}`}>
+                                                    <span className={`p-1.5 rounded-lg ${isCurrent ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-500"}`}>
                                                         <Icon size={16} />
                                                     </span>
                                                     <span>{role.name}</span>
                                                 </div>
                                                 {isCurrent && (
-                                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold">
+                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">
                                                         Activo
                                                     </span>
                                                 )}
@@ -129,4 +124,4 @@ function Header() {
     );
 }
 
-export default Header;
+export default AdminHeader;
