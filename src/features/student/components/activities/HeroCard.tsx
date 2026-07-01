@@ -1,37 +1,35 @@
-import { Upload } from "lucide-react";
+import type {Activity} from "../../../../types/activity.ts";
 
-function HeroCard() {
-    return (
-        <div className="relative overflow-hidden rounded-3xl bg-blue-700 text-white p-8 min-h-80 flex flex-col justify-between">
-            <div>
-        <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase">
-          Próximo vencimiento
-        </span>
+interface HeroCardProps {
+    nextActivity: Activity | null;
+}
 
-                <h2 className="text-4xl font-bold mt-6 mb-3">
-                    Desarrollo Web Full Stack
-                </h2>
-
-                <p className="text-white/80 max-w-144">
-                    Proyecto Final: Implementación de
-                    Microservicios con Node.js y React.
-                </p>
+function HeroCard({ nextActivity }: HeroCardProps) {
+    if (!nextActivity) {
+        return (
+            <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 className="text-xl font-bold text-slate-700 mb-2">Próximo vencimiento</h3>
+                <p className="text-slate-500">No hay actividades pendientes próximas.</p>
             </div>
+        );
+    }
 
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6 mt-10">
-                <div>
-                    <p className="text-sm text-white/70">
-                        Fecha límite
-                    </p>
-
-                    <p className="font-bold">
-                        Mañana, 23:59
-                    </p>
-                </div>
-
-                <button className="bg-white text-blue-700 px-6 py-3 rounded-2xl font-semibold flex items-center gap-2 hover:bg-slate-100 transition">
-                    <Upload size={18} />
-
+    return (
+        <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Próximo vencimiento</h3>
+            <h2 className="text-2xl font-bold mt-2">{nextActivity.cursoNombre}</h2>
+            <p className="text-slate-700 mt-1">{nextActivity.titulo}</p>
+            <div className="mt-4 flex items-center gap-4">
+        <span className="text-sm font-medium text-red-500">
+          {new Date(nextActivity.fechaLimite).toLocaleString('es-ES', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              hour: '2-digit',
+              minute: '2-digit'
+          })}
+        </span>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
                     Subir archivos
                 </button>
             </div>

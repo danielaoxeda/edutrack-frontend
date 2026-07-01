@@ -1,65 +1,25 @@
-import {
-    CheckCircle,
-    Clock3,
-    Upload,
-} from "lucide-react";
+import type {Activity} from "../../../../types/activity.ts";
 
-interface Props {
-    title: string;
-    description: string;
-    date: string;
-    status: "entregado" | "pendiente" | "calificado";
-}
+function ActivityCard({ titulo, cursoNombre, fechaLimite, estado }: Activity) {
+    const isPast = new Date(fechaLimite) < new Date();
+    const statusColor =
+        estado === 'Entregado' ? 'text-green-600 bg-green-100' :
+            estado === 'Calificado' ? 'text-blue-600 bg-blue-100' :
+                isPast ? 'text-red-600 bg-red-100' : 'text-yellow-600 bg-yellow-100';
 
-function ActivityCard({
-                          title,
-                          description,
-                          date,
-                          status,
-                      }: Props) {
     return (
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:shadow-md transition">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-md transition">
             <div>
-                <h3 className="font-bold text-lg">
-                    {title}
-                </h3>
-
-                <p className="text-slate-500">
-                    {description}
-                </p>
+                <h4 className="font-bold text-slate-800">{titulo}</h4>
+                <p className="text-sm text-slate-500">{cursoNombre}</p>
             </div>
-
-            <div className="flex items-center gap-6">
-                <div className="text-right">
-                    <p className="text-xs uppercase text-slate-400 font-bold">
-                        Fecha límite
-                    </p>
-
-                    <p className="font-medium">
-                        {date}
-                    </p>
-                </div>
-
-                {status === "entregado" && (
-                    <div className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm flex items-center gap-2">
-                        <CheckCircle size={16} />
-                        Entregado
-                    </div>
-                )}
-
-                {status === "pendiente" && (
-                    <button className="bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm flex items-center gap-2">
-                        <Clock3 size={16} />
-                        Pendiente
-                    </button>
-                )}
-
-                {status === "calificado" && (
-                    <button className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm flex items-center gap-2">
-                        <Upload size={16} />
-                        Calificado
-                    </button>
-                )}
+            <div className="flex items-center gap-4">
+        <span className="text-sm font-medium text-slate-600">
+          {new Date(fechaLimite).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </span>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor}`}>
+          {estado}
+        </span>
             </div>
         </div>
     );

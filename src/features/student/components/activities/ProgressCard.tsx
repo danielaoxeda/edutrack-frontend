@@ -1,30 +1,18 @@
-import { BarChart3 } from "lucide-react";
+interface ProgressCardProps {
+    total: number;
+    completed: number;
+}
 
-function ProgressCard() {
+function ProgressCard({ total, completed }: ProgressCardProps) {
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
     return (
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 h-full flex flex-col justify-between">
-            <div className="flex justify-between">
-                <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
-                    <BarChart3 className="text-blue-700" />
-                </div>
-
-                <span className="text-sm font-semibold text-blue-700">
-          Semestre 2026-1
-        </span>
-            </div>
-
-            <div className="mt-10">
-                <h2 className="text-5xl font-extrabold">
-                    60%
-                </h2>
-
-                <p className="text-slate-500 mt-2">
-                    Progreso total de tareas
-                </p>
-
-                <div className="w-full h-3 bg-slate-200 rounded-full mt-6 overflow-hidden">
-                    <div className="h-full w-[85%] bg-blue-700 rounded-full" />
-                </div>
+        <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-700">Progreso</h3>
+            <p className="text-3xl font-extrabold text-blue-600 mt-2">{percentage}%</p>
+            <p className="text-sm text-slate-500">{completed} de {total} actividades completadas</p>
+            <div className="w-full bg-slate-200 rounded-full h-2.5 mt-3">
+                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${percentage}%` }}></div>
             </div>
         </div>
     );

@@ -1,96 +1,33 @@
-import {
-    ChevronLeft,
-    ChevronRight,
-} from "lucide-react";
+import type {Activity} from "../../../../types/activity.ts";
 
-function CalendarCard() {
-    const days = [
-        "L",
-        "M",
-        "M",
-        "J",
-        "V",
-        "S",
-        "D",
-    ];
+interface CalendarCardProps {
+    activities: Activity[];
+}
 
-    const dates = [
-        27,
-        28,
-        29,
-        30,
-        31,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-    ];
+function CalendarCard({ activities }: CalendarCardProps) {
+    // Podemos agrupar por fecha o simplemente mostrar las próximas
+    const upcoming = activities
+        .filter(a => new Date(a.fechaLimite) >= new Date())
+        .sort((a, b) => new Date(a.fechaLimite).getTime() - new Date(b.fechaLimite).getTime())
+        .slice(0, 5);
 
     return (
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-            {/* HEADER */}
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold">
-                    Calendario Mayo
-                </h3>
-
-                <div className="flex items-center gap-2">
-                    <button className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition">
-                        <ChevronLeft size={18} />
-                    </button>
-
-                    <button className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center transition">
-                        <ChevronRight size={18} />
-                    </button>
-                </div>
-            </div>
-
-            {/* DÍAS */}
-            <div className="grid grid-cols-7 gap-2 text-center mb-3">
-                {days.map((day) => (
-                    <div
-                        key={day}
-                        className="text-xs font-bold text-slate-400 uppercase py-2"
-                    >
-                        {day}
-                    </div>
-                ))}
-            </div>
-
-            {/* FECHAS */}
-            <div className="grid grid-cols-7 gap-2 text-center">
-                {dates.map((date) => (
-                    <div
-                        key={date}
-                        className={`
-              h-10 flex items-center justify-center
-              rounded-xl text-sm font-medium transition
-
-              ${
-                            date === 7
-                                ? "bg-blue-700 text-white"
-                                : date === 12
-                                    ? "border-2 border-red-500 text-red-500"
-                                    : "hover:bg-slate-100"
-                        }
-            `}
-                    >
-                        {date}
-                    </div>
-                ))}
-            </div>
+        <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-700 mb-4">Calendario</h3>
+            {upcoming.length === 0 ? (
+                <p className="text-slate-500">No hay próximas fechas</p>
+            ) : (
+                <ul className="space-y-3">
+                    {upcoming.map((a) => (
+                        <li key={a.id} className="flex justify-between border-b border-slate-100 pb-2">
+                            <span className="text-sm">{a.titulo}</span>
+                            <span className="text-sm text-slate-500">
+                {new Date(a.fechaLimite).toLocaleDateString('es-ES')}
+              </span>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
