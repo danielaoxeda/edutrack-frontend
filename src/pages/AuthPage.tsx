@@ -24,8 +24,7 @@ const AuthPage = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="font-label-md text-label-md text-primary font-bold transition-opacity active:opacity-80" onClick={() => setTab("login")}>Ingresar</button>
-                        <button className="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity" onClick={() => setTab("register")}>Comenzar</button>
+                        <button className="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity" onClick={() => setTab("login")}>Ingresar</button>
                     </div>
                 </div>
             </nav>
@@ -91,16 +90,6 @@ const AuthPage = () => {
                                     Iniciar sesión
                                 </button>
 
-                                <button
-                                    className={`flex-1 py-4 font-label-md text-label-md transition-all ${
-                                        tab === "register"
-                                            ? "text-primary border-b-2 border-primary bg-surface-container-low font-bold"
-                                            : "text-on-surface-variant hover:bg-surface-variant/10"
-                                    }`}
-                                    onClick={() => setTab("register")}
-                                >
-                                    Registrarse
-                                </button>
                             </div>
 
                             <div className="p-8">

@@ -1,45 +1,34 @@
-// src/pages/student/ActivitiesPage.tsx
 import { Search, Filter, ListTodo } from 'lucide-react';
-import HeroCard from '../components/activities/HeroCard';
-import ProgressCard from '../components/activities/ProgressCard';
-import ActivityCard from '../components/activities/ActivityCard';
-import CalendarCard from '../components/activities/CalendarCard';
+
 import SupportCard from '../components/activities/SupportCard';
 import StudentLayout from '../../../layout/StudentLayout';
+import {toActivityCardProps} from "../../../adapters/activityAdapter.ts";
+import {useAuth} from "../../../context/AuthContext.tsx";
 import {useActivities} from "../../../hooks/useActivities.ts";
+import HeroCard from "../components/activities/HeroCard.tsx";
+import ProgressCard from "../components/activities/ProgressCard.tsx";
+import ActivityCard from "../components/activities/ActivityCard.tsx";
+import CalendarCard from "../components/activities/CalendarCard.tsx";
 
-function ActivitiesPage() {
-    // Por ahora sin filtros, pero podemos añadirlos después
-    const { activities, loading, error } = useActivities();
+export default function ActivitiesPage() {
+    const { estudianteId } = useAuth();
+    const { activities, sessions, loading, error } = useActivities(estudianteId || undefined);
 
-    // Calcular la actividad más próxima (para HeroCard)
-    const now = new Date();
-    const upcomingActivities = activities
-        .filter(a => new Date(a.fechaLimite) >= now && a.estado === 'Pendiente')
-        .sort((a, b) => new Date(a.fechaLimite).getTime() - new Date(b.fechaLimite).getTime());
+    // Ordenar actividades por fecha límite (las más cercanas primero)
+    const sortedActivities = [...activities].sort(
+        (a, b) => new Date(a.fechaLimite).getTime() - new Date(b.fechaLimite).getTime()
+    );
 
-    const nextActivity = upcomingActivities.length > 0 ? upcomingActivities[0] : null;
+    // La primera actividad es la más próxima (Hero)
+    const nextActivity = sortedActivities[0];
 
-    // Podríamos también calcular estadísticas para ProgressCard
-    const totalActivities = activities.length;
-    const completedActivities = activities.filter(a => a.estado === 'Entregado' || a.estado === 'Calificado').length;
-
-    if (loading) {
-        return (
-            <StudentLayout>
-                <div className="w-full flex justify-center items-center min-h-[400px]">
-                    <p className="text-slate-500">Cargando actividades...</p>
-                </div>
-            </StudentLayout>
-        );
-    }
+    // Convertir a props para ActivityCard
+    const activityCardPropsList = sortedActivities.map(toActivityCardProps);
 
     if (error) {
         return (
             <StudentLayout>
-                <div className="w-full flex justify-center items-center min-h-[400px]">
-                    <p className="text-red-500">{error}</p>
-                </div>
+                <div className="p-4 text-red-600">Error: {error}</div>
             </StudentLayout>
         );
     }
@@ -52,7 +41,6 @@ function ActivitiesPage() {
                     <div>
                         <h1 className="text-4xl font-extrabold text-slate-900">Actividades</h1>
                     </div>
-
                     <div className="flex gap-4">
                         <div className="relative">
                             <Search className="absolute left-3 top-3 text-slate-400" size={20} />
@@ -62,7 +50,6 @@ function ActivitiesPage() {
                                 className="pl-10 pr-4 py-3 rounded-full bg-white border border-slate-200 outline-none focus:ring-2 focus:ring-blue-600 w-72"
                             />
                         </div>
-
                         <button className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50">
                             <Filter size={20} />
                         </button>
@@ -71,17 +58,25 @@ function ActivitiesPage() {
 
                 {/* GRID */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* HERO */}
+                    {/* HERO: muestra la actividad más próxima */}
                     <div className="lg:col-span-8">
-                        <HeroCard nextActivity={nextActivity} />
+                        {loading ? (
+                            <div className="h-48 animate-pulse bg-slate-200 rounded-xl" />
+                        ) : nextActivity ? (
+                            <HeroCard activity={nextActivity} />
+                        ) : (
+                            <div className="h-48 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500">
+                                No hay actividades próximas
+                            </div>
+                        )}
                     </div>
 
                     {/* PROGRESS */}
                     <div className="lg:col-span-4">
-                        <ProgressCard total={totalActivities} completed={completedActivities} />
+                        <ProgressCard activities={activities} />
                     </div>
 
-                    {/* ACTIVITIES */}
+                    {/* LISTA DE ACTIVIDADES */}
                     <div className="lg:col-span-12">
                         <h2 className="flex items-center gap-2 text-2xl font-bold mb-6">
                             <ListTodo className="text-blue-700" />
@@ -89,15 +84,26 @@ function ActivitiesPage() {
                         </h2>
 
                         <div className="space-y-4">
-                            {activities.map((activity) => (
-                                <ActivityCard key={activity.id} {...activity} />
-                            ))}
+                            {loading ? (
+                                // Esqueletos de carga
+                                Array.from({ length: 3 }).map((_, i) => (
+                                    <div key={i} className="h-24 animate-pulse bg-slate-200 rounded-xl" />
+                                ))
+                            ) : activityCardPropsList.length > 0 ? (
+                                activityCardPropsList.map((props) => (
+                                    <ActivityCard key={props.id} {...props} />
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-slate-500">
+                                    No tienes actividades pendientes.
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* CALENDAR */}
+                    {/* CALENDAR (simplificado) */}
                     <div className="lg:col-span-5">
-                        <CalendarCard activities={activities} />
+                        <CalendarCard sessions={sessions} />
                     </div>
 
                     {/* SUPPORT */}
@@ -109,5 +115,3 @@ function ActivitiesPage() {
         </StudentLayout>
     );
 }
-
-export default ActivitiesPage;

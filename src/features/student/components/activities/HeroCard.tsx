@@ -1,40 +1,26 @@
-import type {Activity} from "../../../../types/activity.ts";
+import type { Actividad } from "../../../../types/activity";
+import { toActivityCardProps } from "../../../../adapters/activityAdapter";
 
 interface HeroCardProps {
-    nextActivity: Activity | null;
+    activity: Actividad;
 }
 
-function HeroCard({ nextActivity }: HeroCardProps) {
-    if (!nextActivity) {
-        return (
-            <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                <h3 className="text-xl font-bold text-slate-700 mb-2">Próximo vencimiento</h3>
-                <p className="text-slate-500">No hay actividades pendientes próximas.</p>
-            </div>
-        );
-    }
+export default function HeroCard({ activity }: HeroCardProps) {
+    const props = toActivityCardProps(activity);
 
     return (
-        <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-            <h3 className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Próximo vencimiento</h3>
-            <h2 className="text-2xl font-bold mt-2">{nextActivity.cursoNombre}</h2>
-            <p className="text-slate-700 mt-1">{nextActivity.titulo}</p>
-            <div className="mt-4 flex items-center gap-4">
-        <span className="text-sm font-medium text-red-500">
-          {new Date(nextActivity.fechaLimite).toLocaleString('es-ES', {
-              weekday: 'long',
-              day: 'numeric',
-              month: 'long',
-              hour: '2-digit',
-              minute: '2-digit'
-          })}
+        <div className="bg-blue-600 text-white p-6 rounded-xl shadow-lg">
+            <p className="text-sm font-medium opacity-80">PRÓXIMO VENCIMIENTO</p>
+            <h2 className="text-2xl font-bold mt-2">{props.title}</h2>
+            <p className="text-sm opacity-90 mt-1">{props.courseName}</p>
+            <div className="mt-4 flex items-center gap-2">
+        <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+          {props.deadline}
         </span>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
-                    Subir archivos
-                </button>
+                <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+          {props.status}
+        </span>
             </div>
         </div>
     );
-}
-
-export default HeroCard;
+};

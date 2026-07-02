@@ -1,21 +1,32 @@
+import type {Actividad} from "../../../../types/activity.ts";
+
 interface ProgressCardProps {
-    total: number;
-    completed: number;
+    activities: Actividad[];
 }
 
-function ProgressCard({ total, completed }: ProgressCardProps) {
-    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+export default function ProgressCard({ activities }: ProgressCardProps) {
+    const total = activities.length;
+    const entregadas = activities.filter(a => a.entregas?.length > 0).length;
+    const calificadas = activities.filter(a => a.calificado).length;
+    const pendientes = total - entregadas;
 
     return (
-        <div className="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-700">Progreso</h3>
-            <p className="text-3xl font-extrabold text-blue-600 mt-2">{percentage}%</p>
-            <p className="text-sm text-slate-500">{completed} de {total} actividades completadas</p>
-            <div className="w-full bg-slate-200 rounded-full h-2.5 mt-3">
-                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${percentage}%` }}></div>
+        <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+            <h3 className="font-bold text-slate-700">Tu progreso</h3>
+            <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                    <span>Pendientes</span>
+                    <span className="font-medium">{pendientes}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span>Entregadas</span>
+                    <span className="font-medium">{entregadas}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                    <span>Calificadas</span>
+                    <span className="font-medium">{calificadas}</span>
+                </div>
             </div>
         </div>
     );
-}
-
-export default ProgressCard;
+};
