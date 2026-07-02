@@ -1,21 +1,25 @@
 import {
     BrowserRouter,
-    Routes,
-    Route,
     Navigate,
+    Route,
+    Routes,
 } from "react-router-dom";
 
-import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
-import ActivitiesPage from "./features/student/pages/ActivitiesPage";
-import SettingsPage from "./features/student/pages/SettingsPage.tsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminCoursesPage from "./features/admin/pages/AdminCourses";
 import AdminDashboardPage from "./features/admin/pages/AdminDashboard";
-import TeacherDashboardPage from "./features/teacher/pages/TeacherDashboard";
+import AdminSettingsPage from "./features/admin/pages/AdminSettings";
+import AdminUsersPage from "./features/admin/pages/AdminUsers";
+import ActivitiesPage from "./features/student/pages/ActivitiesPage";
+import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
+import SettingsPage from "./features/student/pages/SettingsPage";
+import TeacherAttendancePage from "./features/teacher/pages/TeacherAttendance";
 import TeacherCoursesPage from "./features/teacher/pages/TeacherCourses";
+import TeacherDashboardPage from "./features/teacher/pages/TeacherDashboard";
+import TeacherGradesPage from "./features/teacher/pages/TeacherGrades";
+import TeacherMessagesPage from "./features/teacher/pages/TeacherMessages";
 import TeacherStudentsPage from "./features/teacher/pages/TeacherStudents";
 import TeacherTasksPage from "./features/teacher/pages/TeacherTasks";
-import TeacherGradesPage from "./features/teacher/pages/TeacherGrades";
-import TeacherAttendancePage from "./features/teacher/pages/TeacherAttendance";
-import TeacherMessagesPage from "./features/teacher/pages/TeacherMessages";
 import AuthPage from "./pages/AuthPage";
 import HomePage from "./pages/HomePage";
 
@@ -23,91 +27,125 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/auth" element={<AuthPage />} />
 
-                {/* HOME */}
-                <Route
-                    path="/"
-                    element={<HomePage />}
-                />
-
-                {/* AUTH (moved) */}
-                <Route
-                    path="/auth"
-                    element={<AuthPage />}
-                />
-
-                {/* DASHBOARD ESTUDIANTE */}
                 <Route
                     path="/dashboard-estudiante"
-                    element={<DashboardEstudiantePage />}
+                    element={
+                        <ProtectedRoute allow={["STUDENT", "TEACHER", "ADMIN"]}>
+                            <DashboardEstudiantePage />
+                        </ProtectedRoute>
+                    }
                 />
-                <Route
-                    path="/dashboard-admin"
-                    element={<AdminDashboardPage />}
-                />
-
-                {/* ACTIVIDADES */}
                 <Route
                     path="/actividades-estudiante"
-                    element={<ActivitiesPage />}
+                    element={
+                        <ProtectedRoute allow={["STUDENT", "TEACHER", "ADMIN"]}>
+                            <ActivitiesPage />
+                        </ProtectedRoute>
+                    }
                 />
                 <Route
                     path="/configuracion-estudiante"
-                    element={<SettingsPage />}
-                />
-
-                {/* DASHBOARD DOCENTE */}
-                <Route
-                    path="/dashboard-docente"
-                    element={<TeacherDashboardPage />}
-                />
-
-                {/* CURSOS DOCENTE */}
-                <Route
-                    path="/cursos-docente"
-                    element={<TeacherCoursesPage />}
-                />
-
-                {/* ESTUDIANTES DOCENTE */}
-                <Route
-                    path="/estudiantes-docente"
-                    element={<TeacherStudentsPage />}
-                />
-
-                {/* TAREAS DOCENTE */}
-                <Route
-                    path="/tareas-docente"
-                    element={<TeacherTasksPage />}
-                />
-
-                {/* CALIFICACIONES DOCENTE */}
-                <Route
-                    path="/calificaciones-docente"
-                    element={<TeacherGradesPage />}
-                />
-
-                {/* ASISTENCIA DOCENTE */}
-                <Route
-                    path="/asistencia-docente"
-                    element={<TeacherAttendancePage />}
-                />
-
-                {/* MENSAJES DOCENTE */}
-                <Route
-                    path="/mensajes-docente"
-                    element={<TeacherMessagesPage />}
-                />
-
-                {/* REDIRECT */}
-                <Route
-                    path="*"
                     element={
-                        <Navigate
-                            to="/"
-                            replace
-                        />
+                        <ProtectedRoute allow={["STUDENT", "TEACHER", "ADMIN"]}>
+                            <SettingsPage />
+                        </ProtectedRoute>
                     }
                 />
+
+                <Route
+                    path="/dashboard-admin"
+                    element={
+                        <ProtectedRoute allow={["ADMIN"]}>
+                            <AdminDashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/usuarios-admin"
+                    element={
+                        <ProtectedRoute allow={["ADMIN"]}>
+                            <AdminUsersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/cursos-admin"
+                    element={
+                        <ProtectedRoute allow={["ADMIN"]}>
+                            <AdminCoursesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/configuracion-admin"
+                    element={
+                        <ProtectedRoute allow={["ADMIN"]}>
+                            <AdminSettingsPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/dashboard-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherDashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/cursos-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherCoursesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/estudiantes-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherStudentsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/tareas-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherTasksPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/calificaciones-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherGradesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/asistencia-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherAttendancePage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/mensajes-docente"
+                    element={
+                        <ProtectedRoute allow={["TEACHER", "ADMIN"]}>
+                            <TeacherMessagesPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>
     );
