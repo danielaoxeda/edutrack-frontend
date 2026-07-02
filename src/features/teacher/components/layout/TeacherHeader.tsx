@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, Search, ChevronDown, GraduationCap, User, ShieldCheck } from "lucide-react";
+import { getAuthSession } from "../../../../lib/auth";
 
 function TeacherHeader() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const session = getAuthSession();
+    const teacherName = session?.name?.trim() || "Profesor";
+    const firstName = teacherName.split(/\s+/)[0];
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -32,7 +36,7 @@ function TeacherHeader() {
                 {/* WELCOME TEXT */}
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 leading-tight">
-                        Bienvenido, Profesor
+                        Bienvenido, {firstName}
                     </h1>
                     <p className="text-sm text-slate-500 font-medium">
                         Resumen académico para el ciclo actual.
@@ -68,7 +72,7 @@ function TeacherHeader() {
                             <div className="relative shrink-0">
                                 <img
                                     src="/user.png"
-                                    alt="Dr. Roberto M. avatar"
+                                    alt={`Avatar de ${teacherName}`}
                                     className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-500/10"
                                     onError={(e) => {
                                         e.currentTarget.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80";
@@ -79,10 +83,10 @@ function TeacherHeader() {
 
                             <div className="flex flex-col leading-tight shrink-0 whitespace-nowrap">
                                 <span className="font-bold text-sm text-slate-900">
-                                    Dr. Roberto M.
+                                    {teacherName}
                                 </span>
                                 <span className="text-[11px] font-medium text-slate-500">
-                                    Docente Titular
+                                    {session?.email || "Docente"}
                                 </span>
                             </div>
                             <ChevronDown size={14} className={`text-slate-500 ml-1 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
