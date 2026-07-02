@@ -1,9 +1,8 @@
 import {
+    BookOpen,
     LayoutDashboard,
-    Users,
-    FileText,
-    Activity,
     Settings,
+    Users,
 } from "lucide-react";
 
 export const adminMenu = [
@@ -18,17 +17,12 @@ export const adminMenu = [
         path: "/usuarios-admin",
     },
     {
-        label: "Reportes",
-        icon: FileText,
-        path: "/reportes-admin",
+        label: "Cursos",
+        icon: BookOpen,
+        path: "/cursos-admin",
     },
     {
-        label: "Asistencia",
-        icon: Activity,
-        path: "/asistencia-admin",
-    },
-    {
-        label: "Configuración",
+        label: "Configuracion",
         icon: Settings,
         path: "/configuracion-admin",
     },

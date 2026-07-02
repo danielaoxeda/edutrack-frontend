@@ -1,7 +1,11 @@
 import { ClipboardList, Clock, CheckCircle2 } from "lucide-react";
-import { pendingReviewsData } from "../../data/teacherDashboardData";
+import type { PendingReviewItem } from "../../data/teacherDashboardData";
 
-function PendingReviews() {
+interface PendingReviewsProps {
+    pendingReviews: PendingReviewItem[];
+}
+
+function PendingReviews({ pendingReviews }: PendingReviewsProps) {
     return (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col h-full">
             {/* Header */}
@@ -13,7 +17,7 @@ function PendingReviews() {
                     </h2>
                 </div>
                 <span className="text-xs font-bold bg-amber-50 text-amber-600 px-2.5 py-0.5 rounded-full border border-amber-100/50">
-                    {pendingReviewsData.length} pendientes
+                    {pendingReviews.length} pendientes
                 </span>
             </div>
 
@@ -35,7 +39,7 @@ function PendingReviews() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {pendingReviewsData.map((row) => (
+                        {pendingReviews.map((row) => (
                             <tr key={row.id} className="hover:bg-slate-50/50 transition-colors duration-150 group">
                                 {/* Student Info with avatar circle */}
                                 <td className="py-3.5 pr-2">
