@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../features/auth/api/authApi";
+import { setAuthSession } from "../lib/auth";
 
 type AuthTab = "login" | "register";
 
@@ -7,7 +9,21 @@ const AuthPage = () => {
     const [tab, setTab] = useState<AuthTab>("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    const resolveDashboard = (role: string) => {
+        if (role === "ADMIN") {
+            return "/dashboard-admin";
+        }
+
+        if (role === "TEACHER") {
+            return "/dashboard-docente";
+        }
+
+        return "/dashboard-estudiante";
+    };
 
     return (
         <div className="min-h-screen bg-background text-on-background font-body-md flex flex-col">
@@ -102,18 +118,29 @@ const AuthPage = () => {
 
                                         <form
                                             className="space-y-4"
-                                            onSubmit={(event) => {
+                                            onSubmit={async (event) => {
                                                 event.preventDefault();
-                                                const emailLower = email.toLowerCase();
-                                                if (emailLower.includes("admin") || emailLower.includes("administrador")) {
-                                                    navigate("/dashboard-admin");
-                                                } else if (emailLower.includes("teacher") || emailLower.includes("docente") || emailLower.includes("profesor")) {
-                                                    navigate("/dashboard-docente");
-                                                } else {
-                                                    navigate("/dashboard-estudiante");
+
+                                                try {
+                                                    setLoading(true);
+                                                    setError(null);
+
+                                                    const session = await login({ email, password });
+                                                    setAuthSession(session);
+                                                    navigate(resolveDashboard(session.role));
+                                                } catch (authError) {
+                                                    setError(authError instanceof Error ? authError.message : "No se pudo iniciar sesión");
+                                                } finally {
+                                                    setLoading(false);
                                                 }
                                             }}
                                         >
+                                            {error && (
+                                                <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                                                    {error}
+                                                </div>
+                                            )}
+
                                             <div>
                                                 <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">Correo institucional</label>
                                                 <input
@@ -150,8 +177,8 @@ const AuthPage = () => {
                                                 </label>
                                             </div>
 
-                                            <button className="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-8" type="submit">
-                                                Iniciar sesión
+                                            <button className="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-8" type="submit" disabled={loading}>
+                                                {loading ? "Ingresando..." : "Iniciar sesión"}
                                                 <span className="material-symbols-outlined text-sm">login</span>
                                             </button>
 

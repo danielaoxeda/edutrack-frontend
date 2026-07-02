@@ -1,10 +1,15 @@
 import { Percent, Award, Clock, AlertTriangle, Calendar } from "lucide-react";
+import type { StatItem } from "../../data/teacherDashboardData";
 
-function AttendanceStatsGrid() {
+interface AttendanceStatsGridProps {
+    stats: StatItem[];
+}
+
+function AttendanceStatsGrid({ stats }: AttendanceStatsGridProps) {
+    const statMap = new Map(stats.map((item) => [item.label, item]));
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-            
-            {/* 1. Asistencia Promedio */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -12,10 +17,10 @@ function AttendanceStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            92%
+                            {statMap.get("Asistencia Promedio")?.value ?? "0%"}
                         </span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded">
-                            +1.5%
+                            {statMap.get("Asistencia Promedio")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -24,18 +29,17 @@ function AttendanceStatsGrid() {
                 </div>
             </div>
 
-            {/* 2. Asistencias Perfectas */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Asistencias Perfectas
+                        Estudiantes
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            45
+                            {statMap.get("Estudiantes")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-emerald-600">
-                            Alumnos
+                            {statMap.get("Estudiantes")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -44,18 +48,17 @@ function AttendanceStatsGrid() {
                 </div>
             </div>
 
-            {/* 3. Tardanzas Registradas */}
             <div className="bg-amber-50/10 border border-amber-200 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">
-                        Tardanzas de Hoy
+                        Tardanzas
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-amber-600 tracking-tight">
-                            12
+                            {statMap.get("Tardanzas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-amber-500">
-                            Por justificar
+                            {statMap.get("Tardanzas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -64,18 +67,17 @@ function AttendanceStatsGrid() {
                 </div>
             </div>
 
-            {/* 4. Faltas Totales (Crítico) */}
             <div className="bg-rose-50/10 border border-rose-200 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider block">
-                        Faltas de Hoy
+                        Faltas
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-rose-600 tracking-tight">
-                            8
+                            {statMap.get("Faltas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-rose-500">
-                            Faltas críticas
+                            {statMap.get("Faltas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -84,7 +86,6 @@ function AttendanceStatsGrid() {
                 </div>
             </div>
 
-            {/* 5. Clases Impartidas */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -92,10 +93,10 @@ function AttendanceStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            16
+                            {statMap.get("Clases Impartidas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            Sesiones
+                            {statMap.get("Clases Impartidas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -103,7 +104,6 @@ function AttendanceStatsGrid() {
                     <Calendar size={18} className="stroke-[2.25]" />
                 </div>
             </div>
-
         </div>
     );
 }

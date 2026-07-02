@@ -1,7 +1,11 @@
 import { CalendarDays, MapPin } from "lucide-react";
-import { scheduleData } from "../../data/teacherDashboardData";
+import type { ClassScheduleItem } from "../../data/teacherDashboardData";
 
-function ClassSchedule() {
+interface ClassScheduleProps {
+    schedule: ClassScheduleItem[];
+}
+
+function ClassSchedule({ schedule }: ClassScheduleProps) {
     return (
         <div className="flex flex-col">
             {/* Header (External, matching "Mis Cursos Activos") */}
@@ -20,7 +24,7 @@ function ClassSchedule() {
 
             {/* Schedule Timeline */}
             <div className="relative border-l border-slate-100 ml-3 pl-6 space-y-6">
-                {scheduleData.map((item) => {
+                {schedule.map((item) => {
                     const isEval = item.type === "Evaluación";
                     const dotClass = isEval ? "bg-rose-500 ring-rose-100" : "bg-blue-500 ring-blue-100";
                     const badgeClass = isEval

@@ -1,11 +1,13 @@
 import { AlertCircle, FileText, UserMinus, AlertTriangle } from "lucide-react";
-import { studentAlertsData } from "../../data/teacherDashboardData";
+import type { StudentAlertItem } from "../../data/teacherDashboardData";
 
-function StudentAlertsCard() {
+interface StudentAlertsCardProps {
+    alerts: StudentAlertItem[];
+}
+
+function StudentAlertsCard({ alerts }: StudentAlertsCardProps) {
     return (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col">
-            
-            {/* Header */}
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                     <AlertCircle size={18} className="text-red-500" />
@@ -14,17 +16,16 @@ function StudentAlertsCard() {
                     </h2>
                 </div>
                 <span className="text-[10px] font-extrabold bg-red-600 text-white px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
-                    7 Nuevas
+                    {alerts.length} Nuevas
                 </span>
             </div>
 
-            {/* List of Alerts */}
             <div className="space-y-4 mb-4">
-                {studentAlertsData.map((alert) => {
+                {alerts.map((alert) => {
                     const isAttendance = alert.type === "attendance";
                     const isGrade = alert.type === "grade";
                     const Icon = isAttendance ? UserMinus : isGrade ? AlertTriangle : FileText;
-                    
+
                     let bgAlert = "bg-rose-50/50 border-rose-100 text-rose-950";
                     let metaTextClass = "text-rose-600";
 
@@ -34,11 +35,7 @@ function StudentAlertsCard() {
                     }
 
                     return (
-                        <div
-                            key={alert.id}
-                            className={`p-4 rounded-xl border ${bgAlert} space-y-2 shadow-sm/5`}
-                        >
-                            {/* Student and Time */}
+                        <div key={alert.id} className={`p-4 rounded-xl border ${bgAlert} space-y-2 shadow-sm/5`}>
                             <div className="flex justify-between items-center text-xs">
                                 <span className="font-extrabold text-slate-800">
                                     {alert.studentName}
@@ -48,12 +45,10 @@ function StudentAlertsCard() {
                                 </span>
                             </div>
 
-                            {/* Description */}
                             <p className="text-[11px] font-semibold text-slate-600 leading-normal">
                                 {alert.description}
                             </p>
 
-                            {/* Dynamic Meta Value Badge */}
                             <div className="flex items-center gap-1.5 pt-1.5 border-t border-slate-100/50">
                                 <Icon size={12} className={`shrink-0 ${metaTextClass}`} />
                                 <span className={`text-[10px] font-extrabold uppercase tracking-wide ${metaTextClass}`}>
@@ -65,11 +60,9 @@ function StudentAlertsCard() {
                 })}
             </div>
 
-            {/* Bottom link */}
             <button className="w-full text-center py-2.5 px-4 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-blue-600 hover:text-blue-700 text-xs font-bold rounded-xl transition duration-200 shadow-sm">
                 Ver todas las alertas
             </button>
-
         </div>
     );
 }

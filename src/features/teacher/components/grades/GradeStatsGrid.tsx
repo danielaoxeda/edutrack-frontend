@@ -1,10 +1,15 @@
 import { TrendingUp, CheckCircle2, ClipboardCopy, BookOpen, Users } from "lucide-react";
+import type { StatItem } from "../../data/teacherDashboardData";
 
-function GradeStatsGrid() {
+interface GradeStatsGridProps {
+    stats: StatItem[];
+}
+
+function GradeStatsGrid({ stats }: GradeStatsGridProps) {
+    const statMap = new Map(stats.map((item) => [item.label, item]));
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-            
-            {/* 1. Promedio General */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -12,10 +17,10 @@ function GradeStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            4.1
+                            {statMap.get("Promedio General")?.value ?? "0.0"}
                         </span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded">
-                            +2%
+                            {statMap.get("Promedio General")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -24,7 +29,6 @@ function GradeStatsGrid() {
                 </div>
             </div>
 
-            {/* 2. Tasa de Aprobación */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -32,10 +36,10 @@ function GradeStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            88%
+                            {statMap.get("Tasa de Aprobación")?.value ?? "0%"}
                         </span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded">
-                            +1%
+                            {statMap.get("Tasa de Aprobación")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -44,7 +48,6 @@ function GradeStatsGrid() {
                 </div>
             </div>
 
-            {/* 3. Notas Pendientes */}
             <div className="bg-amber-50/10 border border-amber-200 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">
@@ -52,10 +55,10 @@ function GradeStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-amber-600 tracking-tight">
-                            24
+                            {statMap.get("Notas Pendientes")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-amber-400">
-                            Por registrar
+                            {statMap.get("Notas Pendientes")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -64,7 +67,6 @@ function GradeStatsGrid() {
                 </div>
             </div>
 
-            {/* 4. Exámenes Realizados */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -72,10 +74,10 @@ function GradeStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            8
+                            {statMap.get("Exámenes Realizados")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            Tomados
+                            {statMap.get("Exámenes Realizados")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -84,7 +86,6 @@ function GradeStatsGrid() {
                 </div>
             </div>
 
-            {/* 5. Estudiantes Evaluados */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -92,10 +93,10 @@ function GradeStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            142
+                            {statMap.get("Estudiantes Evaluados")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            / 150 total
+                            {statMap.get("Estudiantes Evaluados")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -103,7 +104,6 @@ function GradeStatsGrid() {
                     <Users size={18} className="stroke-[2.25]" />
                 </div>
             </div>
-
         </div>
     );
 }

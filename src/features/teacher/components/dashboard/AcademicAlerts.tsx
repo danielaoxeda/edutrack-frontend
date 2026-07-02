@@ -1,7 +1,11 @@
 import { AlertCircle, UserMinus, AlertTriangle, Send } from "lucide-react";
-import { alertsData } from "../../data/teacherDashboardData";
+import type { AcademicAlertItem } from "../../data/teacherDashboardData";
 
-function AcademicAlerts() {
+interface AcademicAlertsProps {
+    alerts: AcademicAlertItem[];
+}
+
+function AcademicAlerts({ alerts }: AcademicAlertsProps) {
     return (
         <div className="flex flex-col">
             {/* Header (External, matching "Mis Cursos Activos") */}
@@ -14,7 +18,7 @@ function AcademicAlerts() {
 
             {/* List of Alerts inside White Card */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
-                {alertsData.map((alert) => {
+                {alerts.map((alert) => {
                     const isRisk = alert.type === "risk";
                     const Icon = isRisk ? UserMinus : AlertTriangle;
                     const containerClass = isRisk
