@@ -8,7 +8,7 @@ import type {
     UrgentTaskItem,
     StatItem,
 } from "../data/teacherDashboardData";
-import { request } from "../../../lib/http";
+import api from "../../../lib/api";
 
 type WorkspaceResponse = {
     students: {
@@ -51,7 +51,7 @@ type RawWorkspaceResponse = {
 };
 
 export async function loadTeacherWorkspace(): Promise<WorkspaceResponse> {
-    const raw = await request<RawWorkspaceResponse>("/api/docente/workspace");
+    const {data: raw} = await api.get<RawWorkspaceResponse>("/docente/workspace");
 
     return {
         ...raw,
@@ -66,9 +66,12 @@ export async function loadTeacherWorkspace(): Promise<WorkspaceResponse> {
     };
 }
 
-export async function saveTeacherAttendance(date: string, attendanceList: AttendanceRegistryItem[]): Promise<void> {
-    await request<void>(`/api/docente/asistencia?date=${encodeURIComponent(date)}`, {
-        method: "POST",
-        body: JSON.stringify({ attendanceList }),
-    });
+export async function saveTeacherAttendance(
+    date: string,
+    attendanceList: AttendanceRegistryItem[]
+): Promise<void> {
+    await api.post(
+        `/docente/asistencia?date=${encodeURIComponent(date)}`,
+        { attendanceList }
+    );
 }

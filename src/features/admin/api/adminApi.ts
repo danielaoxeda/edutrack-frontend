@@ -1,4 +1,4 @@
-import { request } from "../../../lib/http";
+import api from "../../../lib/api.ts";
 
 export type AdminOverview = {
     summary: {
@@ -122,47 +122,36 @@ export type StudentEnrollmentPayload = {
 };
 
 export async function loadAdminOverview(): Promise<AdminOverview> {
-    return request<AdminOverview>("/api/admin/overview");
+    const { data } = await api.get<AdminOverview>("/admin/overview");
+    return data;
 }
 
 export async function createTeacher(payload: TeacherCreatePayload) {
-    return request("/api/admin/docentes", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/admin/docentes", payload);
+    return data;
 }
 
 export async function createStudent(payload: StudentCreatePayload) {
-    return request("/api/admin/estudiantes", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/admin/estudiantes", payload);
+    return data;
 }
 
 export async function createCourse(payload: CourseCreatePayload) {
-    return request("/api/cursos", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/cursos", payload);
+    return data;
 }
 
 export async function createSection(payload: SectionCreatePayload) {
-    return request("/api/secciones", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/secciones", payload);
+    return data;
 }
 
 export async function assignTeacherToSection(payload: TeacherSectionAssignmentPayload) {
-    return request("/api/docente-secciones", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/docentes-secciones", payload);
+    return data;
 }
 
 export async function enrollStudentInSection(payload: StudentEnrollmentPayload) {
-    return request("/api/matriculas", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const { data } = await api.post("/matriculas", payload);
+    return data;
 }

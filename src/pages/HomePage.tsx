@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { login } from "../features/auth/api/authApi";
-import { setAuthSession } from "../lib/auth";
+import {useAuth} from "../context/AuthContext.tsx";
+import {resolveDashboard} from "../lib/routes.ts";
 
 function HomePage() {
     const [email, setEmail] = useState("");
@@ -9,6 +9,7 @@ function HomePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
     const { hash } = useLocation();
 
     const scrollToId = (id: string) => {
@@ -17,26 +18,12 @@ function HomePage() {
             target.scrollIntoView({ behavior: "smooth" });
         }
     };
-
-    const resolveDashboard = (role: string) => {
-        if (role === "ADMIN") {
-            return "/dashboard-admin";
-        }
-
-        if (role === "TEACHER") {
-            return "/dashboard-docente";
-        }
-
-        return "/dashboard-estudiante";
-    };
-
     useEffect(() => {
-        if (!hash) {
-            return;
-        }
+        if (!hash) return;
 
         const id = hash.replace("#", "");
         const target = document.getElementById(id);
+
         if (target) {
             target.scrollIntoView({ behavior: "smooth" });
         }
@@ -118,11 +105,16 @@ function HomePage() {
                                         try {
                                             setLoading(true);
                                             setError(null);
-                                            const session = await login({ email, password });
-                                            setAuthSession(session);
-                                            navigate(resolveDashboard(session.role));
+
+                                            const loggedUser = await login(email, password);
+
+                                            navigate(resolveDashboard(loggedUser.rol));
                                         } catch (authError) {
-                                            setError(authError instanceof Error ? authError.message : "No se pudo iniciar sesion");
+                                            setError(
+                                                authError instanceof Error
+                                                    ? authError.message
+                                                    : "No se pudo iniciar sesión"
+                                            );
                                         } finally {
                                             setLoading(false);
                                         }

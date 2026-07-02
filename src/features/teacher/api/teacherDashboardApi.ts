@@ -6,7 +6,7 @@ import type {
     ClassScheduleItem,
     StatItem,
 } from "../data/teacherDashboardData";
-import { request } from "../../../lib/http";
+import api from "../../../lib/api";
 
 type TeacherDashboardResponse = {
     stats: StatItem[];
@@ -18,5 +18,6 @@ type TeacherDashboardResponse = {
 };
 
 export async function loadTeacherDashboard(): Promise<TeacherDashboardResponse> {
-    return request<TeacherDashboardResponse>("/api/docente/dashboard");
+    const { data } = await api.get<TeacherDashboardResponse>("/docente/dashboard");
+    return data;
 }
