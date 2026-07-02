@@ -6,6 +6,16 @@ type RequestOptions = RequestInit & {
     auth?: boolean;
 };
 
+export class ApiError extends Error {
+    readonly status: number;
+
+    constructor(message: string, status: number) {
+        super(message);
+        this.name = "ApiError";
+        this.status = status;
+    }
+}
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
     const headers = new Headers(options.headers ?? {});
 
@@ -20,18 +30,25 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         }
     }
 
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-        ...options,
-        headers,
-    });
+    let response: Response;
+
+    try {
+        response = await fetch(`${API_BASE_URL}${path}`, {
+            ...options,
+            headers,
+        });
+    } catch {
+        throw new ApiError("No pudimos conectar con el servidor. Intenta nuevamente en unos momentos.", 0);
+    }
 
     if (!response.ok) {
-        let errorMessage = `No se pudo cargar ${path} (${response.status})`;
+        let errorMessage = "No pudimos completar la solicitud. Intenta nuevamente.";
 
         try {
             const errorBody = await response.clone().json();
-            if (typeof errorBody?.message === "string" && errorBody.message.trim()) {
-                errorMessage = errorBody.message;
+            const backendMessage = errorBody?.message ?? errorBody?.mensaje;
+            if (typeof backendMessage === "string" && backendMessage.trim()) {
+                errorMessage = backendMessage;
             }
         } catch {
             try {
@@ -40,7 +57,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
                     errorMessage = errorText;
                 }
             } catch {
-                // Keep fallback message.
+                // Keep the user-friendly fallback.
             }
         }
 
@@ -49,10 +66,10 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
             if (typeof window !== "undefined" && window.location.pathname !== "/auth") {
                 window.location.assign("/auth");
             }
-            throw new Error("Tu sesión expiró. Vuelve a iniciar sesión.");
+            throw new ApiError("Tu sesion expiro. Vuelve a iniciar sesion.", response.status);
         }
 
-        throw new Error(errorMessage);
+        throw new ApiError(errorMessage, response.status);
     }
 
     if (response.status === 204) {
