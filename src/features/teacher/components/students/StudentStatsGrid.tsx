@@ -1,10 +1,15 @@
 import { Users, CheckCircle2, AlertTriangle, TrendingUp, CalendarCheck } from "lucide-react";
+import type { StatItem } from "../../data/teacherDashboardData";
 
-function StudentStatsGrid() {
+interface StudentStatsGridProps {
+    stats: StatItem[];
+}
+
+function StudentStatsGrid({ stats }: StudentStatsGridProps) {
+    const statMap = new Map(stats.map((item) => [item.label, item]));
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-            
-            {/* 1. Total Estudiantes */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -12,10 +17,10 @@ function StudentStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            142
+                            {statMap.get("Total Estudiantes")?.value ?? 0}
                         </span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded">
-                            +3%
+                            {statMap.get("Total Estudiantes")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -24,7 +29,6 @@ function StudentStatsGrid() {
                 </div>
             </div>
 
-            {/* 2. Activos */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -32,10 +36,10 @@ function StudentStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            135
+                            {statMap.get("Activos")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            95% del total
+                            {statMap.get("Activos")?.subtext ?? "del total"}
                         </span>
                     </div>
                 </div>
@@ -44,7 +48,6 @@ function StudentStatsGrid() {
                 </div>
             </div>
 
-            {/* 3. En Riesgo (Highlighted in Red border/bg) */}
             <div className="bg-red-50/10 border border-red-200 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block">
@@ -52,10 +55,10 @@ function StudentStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-red-600 tracking-tight">
-                            7
+                            {statMap.get("En Riesgo")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-red-400">
-                            Requieren atención
+                            {statMap.get("En Riesgo")?.subtext ?? "Requieren atención"}
                         </span>
                     </div>
                 </div>
@@ -64,7 +67,6 @@ function StudentStatsGrid() {
                 </div>
             </div>
 
-            {/* 4. Promedio General */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -72,10 +74,10 @@ function StudentStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            4.1
+                            {statMap.get("Promedio General")?.value ?? "0.0"}
                         </span>
                         <span className="text-xs font-semibold text-slate-400">
-                            / 5.0
+                            {statMap.get("Promedio General")?.subtext ?? "/ 5.0"}
                         </span>
                     </div>
                 </div>
@@ -84,7 +86,6 @@ function StudentStatsGrid() {
                 </div>
             </div>
 
-            {/* 5. Asistencia Promedio */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -92,10 +93,10 @@ function StudentStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            92%
+                            {statMap.get("Asistencia Promedio")?.value ?? "0%"}
                         </span>
                         <span className="text-xs font-bold text-red-500 bg-red-50 border border-red-100/50 px-1.5 py-0.5 rounded">
-                            -1%
+                            {statMap.get("Asistencia Promedio")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -103,7 +104,6 @@ function StudentStatsGrid() {
                     <CalendarCheck size={18} className="stroke-[2.25]" />
                 </div>
             </div>
-
         </div>
     );
 }

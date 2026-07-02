@@ -1,5 +1,9 @@
 import { Users, ChevronRight, BarChart2 } from "lucide-react";
-import { coursesData } from "../../data/teacherDashboardData";
+import type { CourseItem } from "../../data/teacherDashboardData";
+
+interface CourseGridProps {
+    courses: CourseItem[];
+}
 
 const headerStyles: Record<string, string> = {
     c1: "from-blue-600 to-indigo-800",
@@ -7,7 +11,7 @@ const headerStyles: Record<string, string> = {
     c3: "from-slate-800 to-slate-950",
 };
 
-function CourseGrid() {
+function CourseGrid({ courses }: CourseGridProps) {
     return (
         <div className="mb-8">
             {/* Header section of "Mis Cursos Activos" */}
@@ -27,7 +31,7 @@ function CourseGrid() {
 
             {/* Grid of Courses */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {coursesData.map((course) => {
+                {courses.map((course) => {
                     const gradient = headerStyles[course.id] || "from-blue-600 to-indigo-800";
                     return (
                         <div

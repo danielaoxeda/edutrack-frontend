@@ -1,7 +1,11 @@
 import { BarChart3 } from "lucide-react";
-import { courseAveragesData } from "../../data/teacherDashboardData";
+import type { CourseAverageItem } from "../../data/teacherDashboardData";
 
-function CourseAverageChart() {
+interface CourseAverageChartProps {
+    courseAverages: CourseAverageItem[];
+}
+
+function CourseAverageChart({ courseAverages }: CourseAverageChartProps) {
     const maxGrade = 5.0;
 
     return (
@@ -16,7 +20,7 @@ function CourseAverageChart() {
 
             {/* Chart Body */}
             <div className="flex-1 flex flex-col justify-around space-y-4">
-                {courseAveragesData.map((item) => {
+                {courseAverages.map((item) => {
                     const percentage = (item.average / maxGrade) * 100;
                     
                     // Determine colors based on average grade
