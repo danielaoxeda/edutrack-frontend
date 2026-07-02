@@ -1,7 +1,7 @@
 import { Search, Filter, ListTodo } from 'lucide-react';
 
 import SupportCard from '../components/activities/SupportCard';
-import StudentLayout from '../../../layout/StudentLayout';
+import StudentLayout from '../layout/StudentLayout.tsx';
 import {toActivityCardProps} from "../../../adapters/activityAdapter.ts";
 import {useAuth} from "../../../context/AuthContext.tsx";
 import {useActivities} from "../../../hooks/useActivities.ts";

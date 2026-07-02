@@ -5,7 +5,7 @@ import CourseCard from "../components/dashboard/CourseCards";
 import AssignmentCard from "../components/dashboard/AssignmentCard";
 
 import { courses, assignments } from "../data/student/studentDashboardData";
-import StudentLayout from "../../../layout/StudentLayout.tsx";
+import StudentLayout from "../layout/StudentLayout.tsx";
 import { Link } from "react-router-dom";
 
 function Dashboard() {

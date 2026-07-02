@@ -1,4 +1,4 @@
-import StudentLayout from "../../../layout/StudentLayout.tsx";
+import StudentLayout from "../layout/StudentLayout.tsx";
 
 import SettingsHeader from "../components/settings/SettingsHeader";
 import ProfileCard from "../components/settings/ProfileCard";
