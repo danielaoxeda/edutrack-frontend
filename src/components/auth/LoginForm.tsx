@@ -1,22 +1,37 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../ui/Input";
+import { login } from "../../features/auth/api/authApi";
+import { setAuthSession } from "../../lib/auth";
 
 const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        const emailLower = email.toLowerCase();
-        if (emailLower.includes("admin") || emailLower.includes("administrador")) {
-            navigate("/dashboard-admin");
-        } else if (emailLower.includes("teacher") || emailLower.includes("docente") || emailLower.includes("profesor")) {
-            navigate("/dashboard-docente");
-        } else {
-            navigate("/dashboard-estudiante");
+
+        try {
+            setLoading(true);
+            setError(null);
+
+            const session = await login({ email, password });
+            setAuthSession(session);
+
+            if (session.role === "ADMIN") {
+                navigate("/dashboard-admin");
+            } else if (session.role === "TEACHER") {
+                navigate("/dashboard-docente");
+            } else {
+                navigate("/dashboard-estudiante");
+            }
+        } catch (loginError) {
+            setError(loginError instanceof Error ? loginError.message : "No se pudo iniciar sesión");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -33,6 +48,12 @@ const LoginForm = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                    <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                        {error}
+                    </div>
+                )}
+
                 <Input
                     label="Correo institucional"
                     type="email"
@@ -53,9 +74,10 @@ const LoginForm = () => {
 
                 <button
                     type="submit"
+                    disabled={loading}
                     className="w-full bg-[#1e3a8a] text-white py-3 rounded-lg hover:bg-blue-900 transition-colors font-medium shadow-sm"
                 >
-                    Iniciar sesión
+                    {loading ? "Ingresando..." : "Iniciar sesión"}
                 </button>
 
                 <p className="text-center text-xs text-slate-400 mt-4 leading-normal">

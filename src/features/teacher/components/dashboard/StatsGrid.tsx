@@ -1,5 +1,9 @@
 import { BookOpen, Users, FileText, GraduationCap, TrendingUp } from "lucide-react";
-import { statsData } from "../../data/teacherDashboardData";
+import type { StatItem } from "../../data/teacherDashboardData";
+
+interface StatsGridProps {
+    stats: StatItem[];
+}
 
 const iconMap: Record<string, any> = {
     BookOpen: {
@@ -24,10 +28,10 @@ const iconMap: Record<string, any> = {
     },
 };
 
-function StatsGrid() {
+function StatsGrid({ stats }: StatsGridProps) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-            {statsData.map((stat) => {
+            {stats.map((stat) => {
                 const config = iconMap[stat.iconName] || iconMap.BookOpen;
                 const IconComponent = config.icon;
 

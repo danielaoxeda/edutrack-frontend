@@ -1,10 +1,15 @@
 import { FileText, ClipboardList, Inbox, AlertTriangle, TrendingUp } from "lucide-react";
+import type { StatItem } from "../../data/teacherDashboardData";
 
-function TaskStatsGrid() {
+interface TaskStatsGridProps {
+    stats: StatItem[];
+}
+
+function TaskStatsGrid({ stats }: TaskStatsGridProps) {
+    const statMap = new Map(stats.map((item) => [item.label, item]));
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
-            
-            {/* 1. Tareas activas */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -12,10 +17,10 @@ function TaskStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            24
+                            {statMap.get("Tareas activas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded">
-                            Activo
+                            {statMap.get("Tareas activas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -24,7 +29,6 @@ function TaskStatsGrid() {
                 </div>
             </div>
 
-            {/* 2. Pendientes revisión */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -32,10 +36,10 @@ function TaskStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            48
+                            {statMap.get("Pendientes revisión")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            Por calificar
+                            {statMap.get("Pendientes revisión")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -44,7 +48,6 @@ function TaskStatsGrid() {
                 </div>
             </div>
 
-            {/* 3. Entregas recibidas */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -52,10 +55,10 @@ function TaskStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            156
+                            {statMap.get("Entregas recibidas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-400">
-                            Enviadas
+                            {statMap.get("Entregas recibidas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -64,7 +67,6 @@ function TaskStatsGrid() {
                 </div>
             </div>
 
-            {/* 4. Tareas vencidas */}
             <div className="bg-rose-50/10 border border-rose-200 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider block">
@@ -72,10 +74,10 @@ function TaskStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-rose-600 tracking-tight">
-                            3
+                            {statMap.get("Tareas vencidas")?.value ?? 0}
                         </span>
                         <span className="text-[10px] font-semibold text-rose-400">
-                            Requiere atención
+                            {statMap.get("Tareas vencidas")?.subtext ?? ""}
                         </span>
                     </div>
                 </div>
@@ -84,7 +86,6 @@ function TaskStatsGrid() {
                 </div>
             </div>
 
-            {/* 5. Promedio cumplimiento */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition">
                 <div className="space-y-1.5">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -92,11 +93,11 @@ function TaskStatsGrid() {
                     </span>
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight">
-                            92%
+                            {statMap.get("Promedio cumplimiento")?.value ?? "0%"}
                         </span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                             <TrendingUp size={10} />
-                            <span>1%</span>
+                            <span>{statMap.get("Promedio cumplimiento")?.subtext ?? ""}</span>
                         </span>
                     </div>
                 </div>
@@ -104,7 +105,6 @@ function TaskStatsGrid() {
                     <TrendingUp size={18} className="stroke-[2.25]" />
                 </div>
             </div>
-
         </div>
     );
 }

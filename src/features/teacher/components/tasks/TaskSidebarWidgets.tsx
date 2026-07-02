@@ -1,38 +1,24 @@
 import { FilePlus, CloudUpload, CalendarDays, Send, AlertTriangle } from "lucide-react";
-import { urgentTasksData } from "../../data/teacherDashboardData";
+import type { UrgentTaskItem } from "../../data/teacherDashboardData";
+
+interface TaskSidebarWidgetsProps {
+    urgentTasks: UrgentTaskItem[];
+}
 
 export function TaskQuickActionsCard() {
     const actions = [
-        {
-            label: "Crear tarea",
-            icon: FilePlus,
-            color: "text-blue-600 bg-blue-50 border-blue-100",
-        },
-        {
-            label: "Subir material",
-            icon: CloudUpload,
-            color: "text-emerald-600 bg-emerald-50 border-emerald-100",
-        },
-        {
-            label: "Programar eval.",
-            icon: CalendarDays,
-            color: "text-amber-600 bg-amber-50 border-amber-100",
-        },
-        {
-            label: "Enviar aviso",
-            icon: Send,
-            color: "text-violet-600 bg-violet-50 border-violet-100",
-        },
+        { label: "Crear tarea", icon: FilePlus, color: "text-blue-600 bg-blue-50 border-blue-100" },
+        { label: "Subir material", icon: CloudUpload, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+        { label: "Programar eval.", icon: CalendarDays, color: "text-amber-600 bg-amber-50 border-amber-100" },
+        { label: "Enviar aviso", icon: Send, color: "text-violet-600 bg-violet-50 border-violet-100" },
     ];
 
     return (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col">
-            {/* Header */}
             <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 pb-3 border-b border-slate-100">
                 Accesos Rápidos
             </h2>
 
-            {/* Grid layout */}
             <div className="grid grid-cols-2 gap-3">
                 {actions.map((action) => {
                     const Icon = action.icon;
@@ -55,10 +41,9 @@ export function TaskQuickActionsCard() {
     );
 }
 
-export function UrgentTasksCard() {
+export function UrgentTasksCard({ urgentTasks }: TaskSidebarWidgetsProps) {
     return (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col">
-            {/* Header */}
             <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
                 <AlertTriangle size={16} className="text-red-500 animate-bounce" />
                 <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
@@ -66,15 +51,13 @@ export function UrgentTasksCard() {
                 </h2>
             </div>
 
-            {/* List of Urgent Tasks */}
             <div className="space-y-4">
-                {urgentTasksData.map((task) => {
-                    const isToday = task.dueText.includes("hoy");
+                {urgentTasks.map((task) => {
+                    const isToday = task.dueText.toLowerCase().includes("hoy");
                     const dueClass = isToday ? "text-red-500 font-extrabold" : "text-slate-400 font-semibold";
-                    
+
                     return (
                         <div key={task.id} className="bg-slate-50 border border-slate-200/40 rounded-xl p-3.5 space-y-3 shadow-sm/5">
-                            {/* Title & Due date */}
                             <div className="flex justify-between items-start gap-2">
                                 <div>
                                     <h3 className="font-bold text-sm text-slate-800 leading-snug">
@@ -89,7 +72,6 @@ export function UrgentTasksCard() {
                                 </span>
                             </div>
 
-                            {/* Deliveries Bar Progress */}
                             <div className="space-y-1.5">
                                 <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
                                     <span>Entregas</span>
