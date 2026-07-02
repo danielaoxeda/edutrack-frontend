@@ -1,70 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TeacherLayout from "../components/layout/TeacherLayout";
 import AttendanceStatsGrid from "../components/attendance/AttendanceStatsGrid";
 import AttendanceRegisterTable from "../components/attendance/AttendanceRegisterTable";
 import { AttendanceQuickActionsCard, AttendanceDistributionCard } from "../components/attendance/AttendanceSidebarWidgets";
-import { attendanceRegistryData } from "../data/teacherDashboardData";
-import type { AttendanceRegistryItem } from "../data/teacherDashboardData";
+import { loadTeacherWorkspace, saveTeacherAttendance } from "../api/teacherWorkspaceApi";
+import type { AttendanceRegistryItem, StatItem } from "../data/teacherDashboardData";
 
 function TeacherAttendance() {
-    // Attendance record state
-    const [attendanceList, setAttendanceList] = useState<AttendanceRegistryItem[]>(attendanceRegistryData);
-    
-    // Filters and Date state
+    const [attendanceList, setAttendanceList] = useState<AttendanceRegistryItem[]>([]);
+    const [stats, setStats] = useState<StatItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [courseFilter, setCourseFilter] = useState("todos");
     const [groupFilter, setGroupFilter] = useState("todos");
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    });
-    
-    // Toast notification state
+    const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split("T")[0]);
     const [showToast, setShowToast] = useState(false);
 
-    // Dynamic state update when a toggle P/T/F button is clicked
+    useEffect(() => {
+        let alive = true;
+
+        const load = async () => {
+            try {
+                const workspace = await loadTeacherWorkspace();
+                if (!alive) return;
+                setAttendanceList(workspace.attendance.attendanceList);
+                setStats(workspace.attendance.stats);
+                setError(null);
+            } catch (err) {
+                if (!alive) return;
+                setError(err instanceof Error ? err.message : "No se pudo cargar la asistencia");
+            } finally {
+                if (alive) setLoading(false);
+            }
+        };
+
+        load();
+        return () => {
+            alive = false;
+        };
+    }, []);
+
     const handleStatusChange = (id: string, newStatus: "presente" | "tardanza" | "falta") => {
-        setAttendanceList(prevList =>
-            prevList.map(item =>
+        setAttendanceList((prevList) =>
+            prevList.map((item) =>
                 item.id === id ? { ...item, todayStatus: newStatus } : item
             )
         );
     };
 
-    // Save attendance callback
-    const handleSave = () => {
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-        }, 3500);
+    const handleSave = async () => {
+        try {
+            await saveTeacherAttendance(selectedDate, attendanceList);
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 2800);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "No se pudo guardar la asistencia");
+        }
     };
 
-    // Export report callback
     const handleExport = () => {
         alert("Generando y descargando el reporte de asistencia consolidado en formato Excel/PDF...");
     };
 
-    // Real-time filtering logic
     const filteredAttendance = attendanceList.filter((row) => {
         const matchesSearch =
             row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             row.code.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCourse =
-            courseFilter === "todos" || row.course === courseFilter;
-        const matchesGroup =
-            groupFilter === "todos" || row.group === groupFilter;
-
+        const matchesCourse = courseFilter === "todos" || row.course === courseFilter;
+        const matchesGroup = groupFilter === "todos" || row.group === groupFilter;
         return matchesSearch && matchesCourse && matchesGroup;
     });
 
     return (
         <TeacherLayout>
             <div className="w-full space-y-6">
-                
-                {/* 1. CABECERA */}
+                {error && (
+                    <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                        {error}
+                    </div>
+                )}
+
                 <div>
                     <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
                         Control de Asistencia
@@ -74,44 +90,40 @@ function TeacherAttendance() {
                     </p>
                 </div>
 
-                {/* 2. STATS ROW */}
-                <AttendanceStatsGrid />
-
-                {/* 3. RESPONSIVE 4-COLUMN LAYOUT */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-                    
-                    {/* LEFT / CENTER REGIONS (3 Columns): Interactive Table */}
-                    <div className="lg:col-span-3">
-                        <AttendanceRegisterTable
-                            attendanceList={filteredAttendance}
-                            onStatusChange={handleStatusChange}
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                            courseFilter={courseFilter}
-                            setCourseFilter={setCourseFilter}
-                            groupFilter={groupFilter}
-                            setGroupFilter={setGroupFilter}
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            onSave={handleSave}
-                            onExport={handleExport}
-                            showToast={showToast}
-                        />
+                {loading ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm font-medium text-slate-500 shadow-sm">
+                        Cargando asistencia real...
                     </div>
+                ) : (
+                    <>
+                        <AttendanceStatsGrid stats={stats} />
 
-                    {/* RIGHT SIDEBAR REGIONS (1 Column): Widgets */}
-                    <div className="lg:col-span-1 space-y-6">
-                        
-                        {/* Quick Action Shortcuts */}
-                        <AttendanceQuickActionsCard />
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                            <div className="lg:col-span-3">
+                                <AttendanceRegisterTable
+                                    attendanceList={filteredAttendance}
+                                    onStatusChange={handleStatusChange}
+                                    searchQuery={searchQuery}
+                                    setSearchQuery={setSearchQuery}
+                                    courseFilter={courseFilter}
+                                    setCourseFilter={setCourseFilter}
+                                    groupFilter={groupFilter}
+                                    setGroupFilter={setGroupFilter}
+                                    selectedDate={selectedDate}
+                                    setSelectedDate={setSelectedDate}
+                                    onSave={handleSave}
+                                    onExport={handleExport}
+                                    showToast={showToast}
+                                />
+                            </div>
 
-                        {/* Daily Attendance Distribution Horizontal Chart */}
-                        <AttendanceDistributionCard />
-
-                    </div>
-
-                </div>
-
+                            <div className="lg:col-span-1 space-y-6">
+                                <AttendanceQuickActionsCard />
+                                <AttendanceDistributionCard stats={stats} />
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </TeacherLayout>
     );

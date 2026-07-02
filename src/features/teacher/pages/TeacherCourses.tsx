@@ -1,33 +1,78 @@
-import { useState } from "react";
-import { Plus, BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookOpen, Plus } from "lucide-react";
 import TeacherLayout from "../components/layout/TeacherLayout";
 import CoursesFilter from "../components/courses/CoursesFilter";
 import CourseCardDetail from "../components/courses/CourseCardDetail";
 import QuickActionsCard from "../components/courses/QuickActionsCard";
 import UpcomingClassesCard from "../components/courses/UpcomingClassesCard";
 import AlertsAndPendingCard from "../components/courses/AlertsAndPendingCard";
-import { coursesData } from "../data/teacherDashboardData";
+import { loadTeacherDashboard } from "../api/teacherDashboardApi";
+import type {
+    AcademicAlertItem,
+    ClassScheduleItem,
+    CourseItem,
+    PendingReviewItem,
+} from "../data/teacherDashboardData";
 
 function TeacherCourses() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("todos");
+    const [courses, setCourses] = useState<CourseItem[]>([]);
+    const [schedule, setSchedule] = useState<ClassScheduleItem[]>([]);
+    const [alerts, setAlerts] = useState<AcademicAlertItem[]>([]);
+    const [pendingReviews, setPendingReviews] = useState<PendingReviewItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Real-time filtering logic
-    const filteredCourses = coursesData.filter((course) => {
+    useEffect(() => {
+        let alive = true;
+
+        const load = async () => {
+            try {
+                const dashboard = await loadTeacherDashboard();
+
+                if (!alive) return;
+
+                setCourses(dashboard.courses);
+                setSchedule(dashboard.schedule);
+                setAlerts(dashboard.alerts);
+                setPendingReviews(dashboard.pendingReviews);
+                setError(null);
+            } catch (err) {
+                if (!alive) return;
+                setError(err instanceof Error ? err.message : "No se pudo cargar los cursos");
+            } finally {
+                if (alive) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const filteredCourses = courses.filter((course) => {
         const matchesSearch =
             course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             course.code.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus =
-            statusFilter === "todos" || course.status === statusFilter;
-        
+        const matchesStatus = statusFilter === "todos" || course.status === statusFilter;
+
         return matchesSearch && matchesStatus;
     });
 
     return (
         <TeacherLayout>
             <div className="w-full space-y-6">
-                
-                {/* 1. MODULE TITLE & MAIN ACTION */}
+                {error && (
+                    <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                        {error}
+                    </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -38,14 +83,12 @@ function TeacherCourses() {
                         </p>
                     </div>
 
-                    {/* Green Action Button from mockup */}
                     <button className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 hover:border-emerald-500 text-white font-bold py-3 px-5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-sm text-sm shrink-0 self-start sm:self-auto group">
                         <Plus size={16} className="text-white group-hover:scale-110 transition-transform duration-200" />
                         <span>Crear actividad</span>
                     </button>
                 </div>
 
-                {/* 2. TOOLBAR FILTERS */}
                 <CoursesFilter
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -53,51 +96,44 @@ function TeacherCourses() {
                     setStatusFilter={setStatusFilter}
                 />
 
-                {/* 3. RESPONSIVE 3-COLUMN CONTENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                    
-                    {/* LEFT / CENTER REGIONS (2 Columns): Course List */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {filteredCourses.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {filteredCourses.map((course) => (
-                                    <CourseCardDetail
-                                        key={course.id}
-                                        course={course}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="bg-white border border-slate-200/80 rounded-2xl p-10 text-center flex flex-col items-center justify-center gap-3 shadow-sm min-h-[300px]">
-                                <div className="p-4 bg-slate-50 text-slate-400 border border-slate-200/50 rounded-2xl">
-                                    <BookOpen size={36} className="stroke-[1.5]" />
+                {loading ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm font-medium text-slate-500 shadow-sm">
+                        Cargando cursos reales...
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                        <div className="lg:col-span-2 space-y-6">
+                            {filteredCourses.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {filteredCourses.map((course) => (
+                                        <CourseCardDetail key={course.id} course={course} />
+                                    ))}
                                 </div>
-                                <h3 className="text-base font-bold text-slate-800">
-                                    No se encontraron cursos
-                                </h3>
-                                <p className="text-xs text-slate-500 max-w-[280px] leading-relaxed">
-                                    Prueba a modificar la búsqueda o a cambiar los filtros para ver tus asignaturas.
-                                </p>
-                            </div>
-                        )}
+                            ) : (
+                                <div className="bg-white border border-slate-200/80 rounded-2xl p-10 text-center flex flex-col items-center justify-center gap-3 shadow-sm min-h-[300px]">
+                                    <div className="p-4 bg-slate-50 text-slate-400 border border-slate-200/50 rounded-2xl">
+                                        <BookOpen size={36} className="stroke-[1.5]" />
+                                    </div>
+                                    <h3 className="text-base font-bold text-slate-800">
+                                        No se encontraron cursos
+                                    </h3>
+                                    <p className="text-xs text-slate-500 max-w-[280px] leading-relaxed">
+                                        Prueba a modificar la busqueda o a cambiar los filtros para ver tus asignaturas.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="lg:col-span-1 space-y-6">
+                            <QuickActionsCard />
+                            <UpcomingClassesCard schedule={schedule} />
+                            <AlertsAndPendingCard
+                                alerts={alerts}
+                                pendingReviews={pendingReviews}
+                            />
+                        </div>
                     </div>
-
-                    {/* RIGHT SIDEBAR REGIONS (1 Column): Widgets */}
-                    <div className="lg:col-span-1 space-y-6">
-                        
-                        {/* Quick Shortcuts */}
-                        <QuickActionsCard />
-
-                        {/* Schedule Info */}
-                        <UpcomingClassesCard />
-
-                        {/* Alert Warning Box */}
-                        <AlertsAndPendingCard />
-
-                    </div>
-
-                </div>
-
+                )}
             </div>
         </TeacherLayout>
     );

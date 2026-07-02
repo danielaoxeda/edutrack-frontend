@@ -1,33 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TeacherLayout from "../components/layout/TeacherLayout";
 import GradeStatsGrid from "../components/grades/GradeStatsGrid";
 import GradeBookTable from "../components/grades/GradeBookTable";
 import { GradeQuickActionsCard, GradeDistributionCard } from "../components/grades/GradeSidebarWidgets";
-import { gradeBookData } from "../data/teacherDashboardData";
+import { loadTeacherWorkspace } from "../api/teacherWorkspaceApi";
+import type { GradeBookItem, StatItem } from "../data/teacherDashboardData";
 
 function TeacherGrades() {
     const [searchQuery, setSearchQuery] = useState("");
     const [courseFilter, setCourseFilter] = useState("todos");
     const [statusFilter, setStatusFilter] = useState("todos");
+    const [grades, setGrades] = useState<GradeBookItem[]>([]);
+    const [stats, setStats] = useState<StatItem[]>([]);
+    const [distribution, setDistribution] = useState<Array<{ label: string; count: number; percent: number; color: string; bgBadge: string }>>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Real-time filtering logic
-    const filteredGrades = gradeBookData.filter((row) => {
+    useEffect(() => {
+        let alive = true;
+
+        const load = async () => {
+            try {
+                const workspace = await loadTeacherWorkspace();
+                if (!alive) return;
+                setGrades(workspace.grades.grades);
+                setStats(workspace.grades.stats);
+                setDistribution(workspace.grades.distribution);
+                setError(null);
+            } catch (err) {
+                if (!alive) return;
+                setError(err instanceof Error ? err.message : "No se pudo cargar las calificaciones");
+            } finally {
+                if (alive) setLoading(false);
+            }
+        };
+
+        load();
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const filteredGrades = grades.filter((row) => {
         const matchesSearch =
             row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             row.code.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCourse =
-            courseFilter === "todos" || row.course === courseFilter;
-        const matchesStatus =
-            statusFilter === "todos" || row.status === statusFilter;
-
+        const matchesCourse = courseFilter === "todos" || row.course === courseFilter;
+        const matchesStatus = statusFilter === "todos" || row.status === statusFilter;
         return matchesSearch && matchesCourse && matchesStatus;
     });
 
     return (
         <TeacherLayout>
             <div className="w-full space-y-6">
-                
-                {/* 1. CABECERA */}
+                {error && (
+                    <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                        {error}
+                    </div>
+                )}
+
                 <div>
                     <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
                         Calificaciones
@@ -37,38 +68,34 @@ function TeacherGrades() {
                     </p>
                 </div>
 
-                {/* 2. STATS ROW */}
-                <GradeStatsGrid />
-
-                {/* 3. RESPONSIVE 4-COLUMN LAYOUT */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-                    
-                    {/* LEFT / CENTER REGIONS (3 Columns): Grade Book Register */}
-                    <div className="lg:col-span-3">
-                        <GradeBookTable
-                            grades={filteredGrades}
-                            searchQuery={searchQuery}
-                            setSearchQuery={setSearchQuery}
-                            courseFilter={courseFilter}
-                            setCourseFilter={setCourseFilter}
-                            statusFilter={statusFilter}
-                            setStatusFilter={setStatusFilter}
-                        />
+                {loading ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm font-medium text-slate-500 shadow-sm">
+                        Cargando calificaciones reales...
                     </div>
+                ) : (
+                    <>
+                        <GradeStatsGrid stats={stats} />
 
-                    {/* RIGHT SIDEBAR REGIONS (1 Column): Widgets */}
-                    <div className="lg:col-span-1 space-y-6">
-                        
-                        {/* Quick Action Shortcuts */}
-                        <GradeQuickActionsCard />
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                            <div className="lg:col-span-3">
+                                <GradeBookTable
+                                    grades={filteredGrades}
+                                    searchQuery={searchQuery}
+                                    setSearchQuery={setSearchQuery}
+                                    courseFilter={courseFilter}
+                                    setCourseFilter={setCourseFilter}
+                                    statusFilter={statusFilter}
+                                    setStatusFilter={setStatusFilter}
+                                />
+                            </div>
 
-                        {/* Grade Distribution Horizontal Chart */}
-                        <GradeDistributionCard />
-
-                    </div>
-
-                </div>
-
+                            <div className="lg:col-span-1 space-y-6">
+                                <GradeQuickActionsCard />
+                                <GradeDistributionCard distribution={distribution} />
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </TeacherLayout>
     );
