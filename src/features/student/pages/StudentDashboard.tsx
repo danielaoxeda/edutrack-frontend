@@ -6,19 +6,16 @@ import AssignmentCard from "../components/dashboard/AssignmentCard";
 
 import StudentLayout from "../layout/StudentLayout.tsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
 import { useStudentDashboard } from "../../../hooks/useStudentDashboard";
 
 function Dashboard() {
-
-    const { estudianteId } = useAuth();
 
     const {
         courses,
         assignments,
         loading,
         error
-    } = useStudentDashboard(estudianteId ?? undefined);
+    } = useStudentDashboard();
 
     return (
         <StudentLayout>

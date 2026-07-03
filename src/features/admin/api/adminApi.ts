@@ -138,17 +138,11 @@ export async function createStudent(payload: StudentCreatePayload) {
 }
 
 export async function updateTeacherStatus(docenteId: number, estado: "ACTIVO" | "INACTIVO") {
-    return request<void>(`/api/admin/docentes/${docenteId}/estado`, {
-        method: "PATCH",
-        body: JSON.stringify({ estado }),
-    });
+    await api.patch(`/admin/docentes/${docenteId}/estado`, { estado });
 }
 
 export async function updateStudentStatus(estudianteId: number, estado: "ACTIVO" | "INACTIVO") {
-    return request<void>(`/api/admin/estudiantes/${estudianteId}/estado`, {
-        method: "PATCH",
-        body: JSON.stringify({ estado }),
-    });
+    await api.patch(`/admin/estudiantes/${estudianteId}/estado`, { estado });
 }
 
 export async function createCourse(payload: CourseCreatePayload) {

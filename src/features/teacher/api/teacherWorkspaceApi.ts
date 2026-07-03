@@ -96,12 +96,10 @@ export type TeacherActivityPayload = {
 };
 
 export async function loadTeacherActivityOptions(): Promise<TeacherActivityOption[]> {
-    return request<TeacherActivityOption[]>("/api/docente/actividad-opciones");
+    const { data } = await api.get<TeacherActivityOption[]>("/docente/actividad-opciones");
+    return data;
 }
 
 export async function createTeacherActivity(payload: TeacherActivityPayload): Promise<void> {
-    await request("/api/docente/actividades", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    await api.post("/docente/actividades", payload);
 }

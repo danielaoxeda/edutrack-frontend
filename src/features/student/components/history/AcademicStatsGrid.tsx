@@ -90,9 +90,9 @@ export default function AcademicStatsGrid({
             />
 
             <StatCard
-                title="Promedio"
-                value={stats.promedio.toFixed(1)}
-                subtitle="Promedio general"
+                title="Calificadas"
+                value={stats.calificadas}
+                subtitle="Entregas con nota"
                 color="bg-blue-100 text-blue-700"
                 icon={<Award size={22} />}
             />
