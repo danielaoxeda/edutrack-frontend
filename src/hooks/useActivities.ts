@@ -1,8 +1,13 @@
-// hooks/useActivities.ts
 import { useState, useEffect } from 'react';
 import { activityService } from '../services/activityService';
 import { matriculaService } from '../services/matriculaService';
-import type { Actividad, SesionClase } from '../types/activity';
+import type { Actividad, SesionClase, SemanaAcademica } from '../types/activity';
+
+function isSemanaAcademica(
+    value: string | SemanaAcademica | null | undefined
+): value is SemanaAcademica {
+    return typeof value !== 'string' && value !== null && value !== undefined;
+}
 
 export const useActivities = (estudianteId?: number) => {
     const [activities, setActivities] = useState<Actividad[]>([]);
@@ -11,39 +16,39 @@ export const useActivities = (estudianteId?: number) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!estudianteId) {
+            setActivities([]);
+            setSessions([]);
+            setLoading(false);
+            return;
+        }
+
         const fetchData = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                // 1. Obtener todas las actividades y sesiones en paralelo
-                const [allActivities, allSessions] = await Promise.all([
+                const [allActivities, allSessions, matriculas] = await Promise.all([
                     activityService.getAllActivities(),
                     activityService.getAllSessions(),
+                    matriculaService.getMatriculasByEstudiante(estudianteId),
                 ]);
 
-                let filteredActivities = allActivities;
-                let filteredSessions = allSessions;
+                const seccionIds = matriculas
+                    .map(m => m.seccion?.id)
+                    .filter((id): id is number => id !== null && id !== undefined);
 
-                // 2. Si tenemos estudianteId, filtramos por sus secciones
-                if (estudianteId) {
-                    // Obtener las matrículas del estudiante
-                    const matriculas = await matriculaService.getMatriculasByEstudiante(estudianteId);
-                    const seccionIds = matriculas.map(m => m.seccion.id);
+                const filteredActivities = allActivities.filter(act => {
+                    const seccionId = act.semanaAcademica?.seccion?.id;
+                    return seccionId ? seccionIds.includes(seccionId) : false;
+                });
 
-                    // Filtrar actividades: solo las que pertenecen a una sección del estudiante
-                    filteredActivities = allActivities.filter(act =>
-                        seccionIds.includes(act.semanaAcademica?.seccion?.id)
-                    );
+                const filteredSessions = allSessions.filter(ses => {
+                    if (!isSemanaAcademica(ses.semanaAcademica)) return false;
 
-                    // Filtrar sesiones: solo las que pertenecen a una sección del estudiante
-                    // Nota: SesionClase tiene semanaAcademica, que a su vez tiene seccion
-                    filteredSessions = allSessions.filter(ses =>
-                        ses.semanaAcademica && typeof ses.semanaAcademica !== 'string'
-                            ? seccionIds.includes(ses.semanaAcademica.seccion?.id)
-                            : false
-                    );
-                }
+                    const seccionId = ses.semanaAcademica.seccion?.id;
+                    return seccionId ? seccionIds.includes(seccionId) : false;
+                });
 
                 setActivities(filteredActivities);
                 setSessions(filteredSessions);
@@ -55,7 +60,7 @@ export const useActivities = (estudianteId?: number) => {
         };
 
         fetchData();
-    }, [estudianteId]); // Se re-ejecuta si cambia el estudianteId
+    }, [estudianteId]);
 
     return { activities, sessions, loading, error };
 };

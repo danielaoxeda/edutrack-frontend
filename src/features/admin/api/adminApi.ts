@@ -17,8 +17,8 @@ export type AdminOverview = {
         estado: string;
         createdAt: string | null;
         roles: string[];
-        docenteId: number | null;
-        estudianteId: number | null;
+        docenteId: number | undefined;
+        estudianteId: number | undefined;
     }>;
     teachers: Array<{
         id: number;

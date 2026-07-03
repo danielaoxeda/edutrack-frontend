@@ -1,5 +1,5 @@
 import type { Actividad } from '../types/activity';
-import type {ActivityCardProps} from "../types/ui.ts";
+import type { ActivityCardProps } from "../types/ui.ts";
 
 const formatDeadline = (fechaLimite: string): string => {
     const date = new Date(fechaLimite);
@@ -11,8 +11,10 @@ const formatDeadline = (fechaLimite: string): string => {
     else if (diffDays === 1) dayStr = 'Mañana';
     else if (diffDays === -1) dayStr = 'Ayer';
     else {
-        // Formato: "30 Mayo"
-        const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        const months = [
+            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+        ];
         dayStr = `${date.getDate()} ${months[date.getMonth()]}`;
     }
 
@@ -21,21 +23,32 @@ const formatDeadline = (fechaLimite: string): string => {
     return `${dayStr}, ${hours}:${minutes}`;
 };
 
+const isSemanaAcademica = (value: any) => {
+    return value && typeof value !== 'string';
+};
+
 export const toActivityCardProps = (actividad: Actividad): ActivityCardProps => {
-    // Tomar la primera entrega (si existe) para determinar el estado
     const entrega = actividad.entregas?.[0];
+
     let status: 'Pendiente' | 'Entregado' | 'Calificado' = 'Pendiente';
 
     if (entrega) {
         if (actividad.calificado) {
             status = 'Calificado';
-        } else if (entrega.estado === 'ENTREGADO' || entrega.estado === 'ATRASADO') {
+        } else if (
+            entrega.estado === 'ENTREGADO' ||
+            entrega.estado === 'ATRASADO'
+        ) {
             status = 'Entregado';
         }
     }
 
-    // Nombre del curso desde la sección
-    const courseName = actividad.semanaAcademica?.seccion?.curso?.nombre || 'Curso sin nombre';
+    const semana = isSemanaAcademica(actividad.semanaAcademica)
+        ? actividad.semanaAcademica
+        : null;
+
+    const courseName =
+        semana?.seccion?.curso?.nombre ?? 'Curso sin nombre';
 
     return {
         id: actividad.id,

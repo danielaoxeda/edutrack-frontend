@@ -9,7 +9,7 @@ export interface Curso {
 export interface PeriodoAcademico {
     id: number;
     nombre: string;
-    fechaInicio: string; // "2026-07-01"
+    fechaInicio: string;
     fechaFin: string;
     numeroSemanas: number;
     estado: 'ACTIVO' | 'INACTIVO' | 'FINALIZADO';
@@ -37,17 +37,21 @@ export interface CriterioEvaluacion {
     porcentaje: number;
 }
 
+/**
+ * 🔥 FIX IMPORTANTE:
+ * eliminamos any y usamos tipos reales o null
+ */
 export interface Entrega {
     id: number;
     actividad?: Actividad;
-    matricula: any;
+    matricula: Matricula;
     comentarioAlumno?: string;
     archivoUrl?: string;
     fechaEntrega: string;
     estado: 'ENTREGADO' | 'ATRASADO' | 'REVISADO' | 'PENDIENTE';
     nota: number;
     comentarioDocente?: string;
-    subsanaciones?: any[];
+    subsanaciones?: unknown[];
 }
 
 export interface Actividad {
@@ -66,19 +70,19 @@ export interface Actividad {
 
 export interface SesionClase {
     id: number;
-    semanaAcademica: SemanaAcademica | string;
+    semanaAcademica: SemanaAcademica;
     tema: string;
-    fecha: string; // "2026-07-01"
-    asistencias: any[];
+    fecha: string;
+    asistencias: unknown[];
 }
 
 export interface Matricula {
     id: number;
-    estudiante: any;
+    estudiante: unknown;
     seccion: Seccion;
     fechaMatricula: string;
     estado: 'ACTIVO' | 'INACTIVO' | 'RETIRADO';
     entregas?: Entrega[];
-    asistencias?: any[];
-    alertasAcademicas?: any[];
+    asistencias?: unknown[];
+    alertasAcademicas?: unknown[];
 }

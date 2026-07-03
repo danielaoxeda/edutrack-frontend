@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     token: string | null;
-    estudianteId: number | null;
+    estudianteId: number | undefined;
     login: (email: string, password: string) => Promise<User>;
     logout: () => void;
     isLoading: boolean;
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         delete api.defaults.headers.common.Authorization;
     };
 
-    const estudianteId = user?.rol === 'ESTUDIANTE' ? user.id : null;
+    const estudianteId = user?.rol === 'ESTUDIANTE' ? user.id : undefined;
 
     return (
         <AuthContext.Provider value={{ user, token, estudianteId, login, logout, isLoading }}>
