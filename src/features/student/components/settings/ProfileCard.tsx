@@ -1,8 +1,36 @@
+import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
+import {useAuth} from "../../../../context/AuthContext.tsx";
+import {studentService} from "../../../../services/studentService.ts";
 
 function ProfileCard() {
+    const { estudianteId } = useAuth();
+
+    const [student, setStudent] = useState<any>(null);
+
+    useEffect(() => {
+        const loadStudent = async () => {
+            if (!estudianteId) return;
+
+            const data = await studentService.getStudentById(estudianteId);
+            setStudent(data);
+        };
+
+        loadStudent();
+    }, [estudianteId]);
+
+    if (!student) {
+        return (
+            <div className="p-8 text-slate-500">
+                Cargando perfil...
+            </div>
+        );
+    }
+
     return (
         <section className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+
+            {/* HEADER */}
             <div className="flex items-start justify-between mb-8">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-900">
@@ -10,81 +38,81 @@ function ProfileCard() {
                     </h2>
 
                     <p className="text-slate-500 mt-1">
-                        Gestiona tu información académica y personal.
+                        Información académica y personal (solo lectura)
                     </p>
                 </div>
-
-                <button className="text-blue-700 font-semibold hover:underline">
-                    Guardar cambios
-                </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 flex items-center gap-6">
-                    <div className="relative">
-                        <img
-                            src="/user.png"
-                            alt="user"
-                            className="w-9 h-9 rounded-full"
-                        />
+            {/* INFO PRINCIPAL */}
+            <div className="md:col-span-2 flex items-center gap-6 mb-8">
 
-                        <button className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-xl shadow-lg">
-                            <Camera size={16} />
-                        </button>
-                    </div>
+                <div className="relative">
+                    <img
+                        src="/user.png"
+                        alt="user"
+                        className="w-10 h-10 rounded-full"
+                    />
 
-                    <div>
-                        <h3 className="font-bold text-lg">
-                            Adriano Bautista
-                        </h3>
-
-                        <p className="text-slate-500 text-sm">
-                            Ingeniería de Software · 7mo ciclo
-                        </p>
-
-                        <p className="text-blue-700 text-sm mt-1">
-                            ID Estudiante: #ST-99201
-                        </p>
-                    </div>
+                    <button className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-xl shadow-lg">
+                        <Camera size={16} />
+                    </button>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                        Nombre completo
+                    <h3 className="font-bold text-lg">
+                        {student.usuario.nombres} {student.usuario.apellidos}
+                    </h3>
+
+                    <p className="text-slate-500 text-sm">
+                        Estado: {student.estadoAcademico}
+                    </p>
+
+                    <p className="text-blue-700 text-sm mt-1">
+                        Código: {student.codigoEstudiante}
+                    </p>
+                </div>
+            </div>
+
+            {/* CAMPOS SOLO LECTURA */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div>
+                    <label className="text-xs font-bold uppercase text-slate-500">
+                        Nombres
                     </label>
 
                     <input
-                        type="text"
-                        defaultValue="Adriano Bautista Calero"
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:ring-2 focus:ring-blue-600"
+                        value={student.usuario.nombres}
+                        disabled
+                        className="w-full rounded-xl border bg-slate-100 p-3 text-slate-500"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                        Correo institucional
+                    <label className="text-xs font-bold uppercase text-slate-500">
+                        Apellidos
                     </label>
 
                     <input
-                        type="email"
+                        value={student.usuario.apellidos}
                         disabled
-                        defaultValue="a.bautistacalero@edutrack.edu"
-                        className="w-full rounded-xl border border-slate-200 bg-slate-100 p-3 text-slate-400"
+                        className="w-full rounded-xl border bg-slate-100 p-3 text-slate-500"
                     />
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                        Biografía profesional
+                    <label className="text-xs font-bold uppercase text-slate-500">
+                        Correo institucional
                     </label>
 
-                    <textarea
-                        rows={5}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:ring-2 focus:ring-blue-600"
-                        defaultValue="Estudiante apasionado por el desarrollo Full Stack y arquitectura de software."
+                    <input
+                        value={student.usuario.email}
+                        disabled
+                        className="w-full rounded-xl border bg-slate-100 p-3 text-slate-500"
                     />
                 </div>
             </div>
+
         </section>
     );
 }
