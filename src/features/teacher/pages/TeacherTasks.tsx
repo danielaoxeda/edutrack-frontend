@@ -5,6 +5,13 @@ import TaskTable from "../components/tasks/TaskTable";
 import TaskSubPanels from "../components/tasks/TaskSubPanels";
 import { TaskQuickActionsCard, UrgentTasksCard } from "../components/tasks/TaskSidebarWidgets";
 import { loadTeacherWorkspace } from "../api/teacherWorkspaceApi";
+import {
+    createTeacherActivity,
+    loadTeacherActivityOptions,
+    type TeacherActivityOption,
+    type TeacherActivityPayload,
+} from "../api/teacherWorkspaceApi";
+import CreateActivityModal from "../components/courses/CreateActivityModal";
 import type { StatItem, TaskItem, RecentSubmissionItem, UrgentTaskItem } from "../data/teacherDashboardData";
 
 function TeacherTasks() {
@@ -17,6 +24,10 @@ function TeacherTasks() {
     const [stats, setStats] = useState<StatItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [feedback, setFeedback] = useState<string | null>(null);
+    const [activityModalOpen, setActivityModalOpen] = useState(false);
+    const [activityOptions, setActivityOptions] = useState<TeacherActivityOption[]>([]);
+    const [savingActivity, setSavingActivity] = useState(false);
 
     useEffect(() => {
         let alive = true;
@@ -44,6 +55,40 @@ function TeacherTasks() {
         };
     }, []);
 
+    const openActivityModal = async () => {
+        setError(null);
+        try {
+            const options = await loadTeacherActivityOptions();
+            if (options.length === 0) {
+                setError("No tienes secciones asignadas para crear tareas.");
+                return;
+            }
+            setActivityOptions(options);
+            setActivityModalOpen(true);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "No se pudieron cargar tus secciones");
+        }
+    };
+
+    const handleCreateActivity = async (payload: TeacherActivityPayload) => {
+        setSavingActivity(true);
+        setError(null);
+        try {
+            await createTeacherActivity(payload);
+            const workspace = await loadTeacherWorkspace();
+            setTasks(workspace.tasks.tasks);
+            setRecentSubmissions(workspace.tasks.recentSubmissions);
+            setUrgentTasks(workspace.tasks.urgentTasks);
+            setStats(workspace.tasks.stats);
+            setFeedback("Tarea publicada correctamente.");
+            setActivityModalOpen(false);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "No se pudo crear la tarea");
+        } finally {
+            setSavingActivity(false);
+        }
+    };
+
     const filteredTasks = tasks.filter((task) => {
         const matchesSearch = task.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCourse = courseFilter === "todos" || task.course === courseFilter;
@@ -57,6 +102,11 @@ function TeacherTasks() {
                 {error && (
                     <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
                         {error}
+                    </div>
+                )}
+                {feedback && (
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                        {feedback}
                     </div>
                 )}
 
@@ -87,17 +137,29 @@ function TeacherTasks() {
                                     setCourseFilter={setCourseFilter}
                                     statusFilter={statusFilter}
                                     setStatusFilter={setStatusFilter}
+                                    onCreateTask={() => void openActivityModal()}
+                                    courseOptions={Array.from(new Set(tasks.map((task) => task.course))).sort()}
                                 />
 
                                 <TaskSubPanels recentSubmissions={recentSubmissions} urgentTasks={urgentTasks} />
                             </div>
 
                             <div className="lg:col-span-1 space-y-6">
-                                <TaskQuickActionsCard />
+                                <TaskQuickActionsCard onCreateTask={() => void openActivityModal()} />
                                 <UrgentTasksCard urgentTasks={urgentTasks} />
                             </div>
                         </div>
                     </>
+                )}
+
+                {activityModalOpen && (
+                    <CreateActivityModal
+                        options={activityOptions}
+                        saving={savingActivity}
+                        error={error}
+                        onClose={() => setActivityModalOpen(false)}
+                        onSubmit={handleCreateActivity}
+                    />
                 )}
             </div>
         </TeacherLayout>

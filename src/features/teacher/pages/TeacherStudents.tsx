@@ -17,6 +17,8 @@ function TeacherStudents() {
     const [stats, setStats] = useState<StatItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 5;
 
     useEffect(() => {
         let alive = true;
@@ -62,6 +64,14 @@ function TeacherStudents() {
 
         return matchesSearch && matchesCourse && matchesGroup && matchesStatus;
     });
+    const totalPages = Math.max(1, Math.ceil(filteredStudents.length / pageSize));
+    const paginatedStudents = filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const courseOptions = Array.from(new Set(students.map((student) => student.course))).sort();
+    const groupOptions = Array.from(new Set(students.map((student) => student.group))).sort();
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, courseFilter, groupFilter, statusFilter]);
 
     return (
         <TeacherLayout>
@@ -110,10 +120,12 @@ function TeacherStudents() {
 
                                 <select value={courseFilter} onChange={(e) => setCourseFilter(e.target.value)} className="bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl px-3 py-2 cursor-pointer text-xs font-semibold text-slate-600 shadow-sm transition outline-none">
                                     <option value="todos">Todos los Cursos</option>
+                                    {courseOptions.map((course) => <option key={course} value={course}>{course}</option>)}
                                 </select>
 
                                 <select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)} className="bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl px-3 py-2 cursor-pointer text-xs font-semibold text-slate-600 shadow-sm transition outline-none">
                                     <option value="todos">Todos los Grupos</option>
+                                    {groupOptions.map((group) => <option key={group} value={group}>{group}</option>)}
                                 </select>
 
                                 <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl px-3 py-2 cursor-pointer text-xs font-semibold text-slate-600 shadow-sm transition outline-none">
@@ -121,6 +133,7 @@ function TeacherStudents() {
                                     <option value="sobresaliente">Sobresaliente</option>
                                     <option value="regular">Regular</option>
                                     <option value="riesgo">En Riesgo</option>
+                                    <option value="sin_evaluacion">Sin evaluar</option>
                                 </select>
                             </div>
 
@@ -150,7 +163,13 @@ function TeacherStudents() {
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                             <div className="lg:col-span-3 space-y-6">
                                 {filteredStudents.length > 0 ? (
-                                    <StudentTable students={filteredStudents} totalCount={students.length} />
+                                    <StudentTable
+                                        students={paginatedStudents}
+                                        totalCount={filteredStudents.length}
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                    />
                                 ) : (
                                     <div className="bg-white border border-slate-200/80 rounded-2xl p-10 text-center flex flex-col items-center justify-center gap-3 shadow-sm min-h-[300px]">
                                         <div className="p-4 bg-slate-50 text-slate-400 border border-slate-200/50 rounded-2xl">

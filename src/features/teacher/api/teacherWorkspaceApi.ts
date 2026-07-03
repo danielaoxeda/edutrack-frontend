@@ -75,3 +75,33 @@ export async function saveTeacherAttendance(
         { attendanceList }
     );
 }
+
+export type TeacherActivityOption = {
+    seccionId: number;
+    cursoCodigo: string;
+    cursoNombre: string;
+    seccionNombre: string;
+};
+
+export type TeacherActivityPayload = {
+    seccionId: number;
+    numeroSemana: number;
+    titulo: string;
+    descripcion: string;
+    tipo: "TAREA" | "PC" | "PROYECTO" | "PRACTICA" | "EXAMEN";
+    fechaLimite: string;
+    calificada: boolean;
+    notaMaxima: number;
+    visible: boolean;
+};
+
+export async function loadTeacherActivityOptions(): Promise<TeacherActivityOption[]> {
+    return request<TeacherActivityOption[]>("/api/docente/actividad-opciones");
+}
+
+export async function createTeacherActivity(payload: TeacherActivityPayload): Promise<void> {
+    await request("/api/docente/actividades", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}

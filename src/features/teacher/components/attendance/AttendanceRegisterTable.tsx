@@ -264,12 +264,12 @@ function AttendanceRegisterTable({
                                         <div className="flex items-center justify-center gap-3">
                                             <div className="w-24 bg-slate-100 h-1.5 rounded-full overflow-hidden shrink-0 border border-slate-200/30">
                                                 <div 
-                                                    className={`h-full rounded-full transition-all duration-500 ${getProgressBarColor(row.attendance)}`}
-                                                    style={{ width: `${row.attendance}%` }}
+                                                    className={`h-full rounded-full transition-all duration-500 ${row.attendance === null ? "bg-slate-300" : getProgressBarColor(row.attendance)}`}
+                                                    style={{ width: `${row.attendance ?? 0}%` }}
                                                 />
                                             </div>
-                                            <span className={`text-[10px] font-black px-2 py-0.5 rounded shadow-sm shrink-0 w-[45px] text-center ${getProgressTextColor(row.attendance)}`}>
-                                                {row.attendance}%
+                                            <span className={`text-[10px] font-black px-2 py-0.5 rounded shadow-sm shrink-0 w-[45px] text-center ${row.attendance === null ? "bg-slate-100 text-slate-500" : getProgressTextColor(row.attendance)}`}>
+                                                {row.attendance === null ? "--" : `${row.attendance}%`}
                                             </span>
                                         </div>
                                     </td>

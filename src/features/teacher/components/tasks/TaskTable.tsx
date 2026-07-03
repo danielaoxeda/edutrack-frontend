@@ -1,4 +1,4 @@
-import { Eye, Edit, Trash2, Calendar, ClipboardCheck, Search, Plus, Filter } from "lucide-react";
+import { Calendar, ClipboardCheck, Search, Plus } from "lucide-react";
 import type { TaskItem } from "../../data/teacherDashboardData";
 
 interface TableProps {
@@ -9,6 +9,8 @@ interface TableProps {
     setCourseFilter: (course: string) => void;
     statusFilter: string;
     setStatusFilter: (status: string) => void;
+    onCreateTask: () => void;
+    courseOptions: string[];
 }
 
 function TaskTable({
@@ -19,6 +21,8 @@ function TaskTable({
     setCourseFilter,
     statusFilter,
     setStatusFilter,
+    onCreateTask,
+    courseOptions,
 }: TableProps) {
     
     // Status Badge Helpers
@@ -34,6 +38,12 @@ function TaskTable({
                 return (
                     <span className="text-[10px] font-extrabold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100 uppercase tracking-wide animate-pulse">
                         Calificando
+                    </span>
+                );
+            case "vencido":
+                return (
+                    <span className="rounded border border-rose-100 bg-rose-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-rose-700">
+                        Vencido
                     </span>
                 );
             case "evaluado":
@@ -59,7 +69,7 @@ function TaskTable({
                     </h2>
                 </div>
 
-                <button className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 hover:border-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition duration-200 shadow-sm text-xs self-start sm:self-auto group">
+                <button type="button" onClick={onCreateTask} className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 hover:border-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 transition duration-200 shadow-sm text-xs self-start sm:self-auto group">
                     <Plus size={14} className="text-white group-hover:scale-110 transition-transform" />
                     <span>Crear nueva tarea</span>
                 </button>
@@ -90,10 +100,7 @@ function TaskTable({
                         className="bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl px-3 py-2 cursor-pointer text-[11px] font-semibold text-slate-600 shadow-sm transition outline-none"
                     >
                         <option value="todos">Todos los Cursos</option>
-                        <option value="Ingeniería de Software">Ingeniería de Software</option>
-                        <option value="Sistemas Operativos">Sistemas Operativos</option>
-                        <option value="Base de Datos II">Base de Datos II</option>
-                        <option value="Inteligencia Artificial">Inteligencia Artificial</option>
+                        {courseOptions.map((course) => <option key={course} value={course}>{course}</option>)}
                     </select>
 
                     {/* Status */}
@@ -104,15 +111,11 @@ function TaskTable({
                     >
                         <option value="todos">Todos los Estados</option>
                         <option value="activo">Activo</option>
+                        <option value="vencido">Vencido</option>
                         <option value="calificando">Calificando</option>
                         <option value="evaluado">Evaluado</option>
                     </select>
 
-                    {/* Más filtros */}
-                    <button className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-bold py-2 px-3.5 rounded-xl flex items-center justify-center gap-1.5 transition duration-200 shadow-sm text-[11px]">
-                        <Filter size={12} className="text-slate-400" />
-                        <span>Más filtros</span>
-                    </button>
                 </div>
 
             </div>
@@ -137,7 +140,6 @@ function TaskTable({
                             <th className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pb-3 text-center">
                                 Estado
                             </th>
-                            <th className="pb-3 text-right pr-2"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -164,7 +166,7 @@ function TaskTable({
                                 <td className="py-3.5 pr-2">
                                     <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                                         <Calendar size={13} className="text-slate-400 shrink-0" />
-                                        <span>Pub: {row.publishedDate} - Lim: {row.limitDate}</span>
+                                        <span>{row.publishedDate === "No registrada" ? "Publicacion no registrada" : `Pub: ${row.publishedDate}`} - Lim: {row.limitDate}</span>
                                     </div>
                                 </td>
 
@@ -180,20 +182,6 @@ function TaskTable({
                                     {getStatusBadge(row.status)}
                                 </td>
 
-                                {/* Actions */}
-                                <td className="py-3.5 text-right pr-2">
-                                    <div className="flex items-center gap-1 ml-auto justify-end">
-                                        <button className="p-1.5 rounded-lg border border-slate-100 hover:border-blue-200 bg-white hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition duration-150 shadow-sm/5">
-                                            <Eye size={13} />
-                                        </button>
-                                        <button className="p-1.5 rounded-lg border border-slate-100 hover:border-amber-200 bg-white hover:bg-amber-50 text-slate-400 hover:text-amber-600 transition duration-150 shadow-sm/5">
-                                            <Edit size={13} />
-                                        </button>
-                                        <button className="p-1.5 rounded-lg border border-slate-100 hover:border-red-200 bg-white hover:bg-rose-50 text-slate-400 hover:text-red-600 transition duration-150 shadow-sm/5">
-                                            <Trash2 size={13} />
-                                        </button>
-                                    </div>
-                                </td>
                             </tr>
                         ))}
                     </tbody>

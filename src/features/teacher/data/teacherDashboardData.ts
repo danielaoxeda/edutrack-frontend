@@ -53,9 +53,9 @@ export interface StudentItem {
     code: string;
     course: string;
     group: string;
-    averageGrade: number;
-    attendance: number;
-    status: "sobresaliente" | "regular" | "riesgo";
+    averageGrade: number | null;
+    attendance: number | null;
+    status: "sobresaliente" | "regular" | "riesgo" | "sin_evaluacion";
 }
 
 export interface StudentAlertItem {
@@ -77,7 +77,7 @@ export interface TaskItem {
     limitDate: string;
     receivedCount: number;
     totalCount: number;
-    status: "activo" | "calificando" | "evaluado";
+    status: "activo" | "vencido" | "calificando" | "evaluado";
 }
 
 export interface RecentSubmissionItem {
@@ -669,8 +669,8 @@ export interface AttendanceRegistryItem {
     code: string;
     course: string;
     group: string;
-    attendance: number;
-    todayStatus: "presente" | "tardanza" | "falta";
+    attendance: number | null;
+    todayStatus: "presente" | "tardanza" | "falta" | "sin_registro";
 }
 
 export const attendanceRegistryData: AttendanceRegistryItem[] = [
