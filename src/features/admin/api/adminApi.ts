@@ -34,6 +34,7 @@ export type AdminOverview = {
         fullName: string;
         email: string;
         codigoEstudiante: string;
+        estado: string;
         estadoAcademico: string;
         enrollmentCount: number;
     }>;
@@ -136,6 +137,20 @@ export async function createStudent(payload: StudentCreatePayload) {
     return request("/api/admin/estudiantes", {
         method: "POST",
         body: JSON.stringify(payload),
+    });
+}
+
+export async function updateTeacherStatus(docenteId: number, estado: "ACTIVO" | "INACTIVO") {
+    return request<void>(`/api/admin/docentes/${docenteId}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({ estado }),
+    });
+}
+
+export async function updateStudentStatus(estudianteId: number, estado: "ACTIVO" | "INACTIVO") {
+    return request<void>(`/api/admin/estudiantes/${estudianteId}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({ estado }),
     });
 }
 

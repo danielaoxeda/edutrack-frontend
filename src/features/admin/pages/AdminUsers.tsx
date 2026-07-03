@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { GraduationCap, Loader2, Plus, Users, X } from "lucide-react";
 import AdminLayout from "../../../layout/AdminLayout";
-import { createStudent, createTeacher } from "../api/adminApi";
+import { createStudent, createTeacher, updateStudentStatus, updateTeacherStatus } from "../api/adminApi";
 import { useAdminOverview } from "../hooks/useAdminOverview";
 
 type CreationMode = "teacher" | "student";
@@ -12,6 +12,7 @@ function AdminUsers() {
     const [modalOpen, setModalOpen] = useState(false);
     const [mode, setMode] = useState<CreationMode>("teacher");
     const [saving, setSaving] = useState(false);
+    const [updatingProfile, setUpdatingProfile] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<string | null>(null);
     const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
@@ -151,6 +152,35 @@ function AdminUsers() {
         }
     };
 
+    const handleStatusChange = async (
+        profileType: CreationMode,
+        profileId: number,
+        currentStatus: string,
+        displayName: string
+    ) => {
+        const nextStatus = currentStatus === "ACTIVO" ? "INACTIVO" : "ACTIVO";
+        const actionKey = `${profileType}-${profileId}`;
+        setUpdatingProfile(actionKey);
+        setFeedback(null);
+
+        try {
+            if (profileType === "teacher") {
+                await updateTeacherStatus(profileId, nextStatus);
+            } else {
+                await updateStudentStatus(profileId, nextStatus);
+            }
+
+            setFeedbackType("success");
+            setFeedback(`${displayName} fue ${nextStatus === "ACTIVO" ? "habilitado" : "deshabilitado"} correctamente.`);
+            await refresh();
+        } catch (err) {
+            setFeedbackType("error");
+            setFeedback(err instanceof Error ? err.message : "No se pudo actualizar el estado");
+        } finally {
+            setUpdatingProfile(null);
+        }
+    };
+
     return (
         <AdminLayout>
             <div className="space-y-6">
@@ -242,11 +272,35 @@ function AdminUsers() {
                                                 <p className="text-sm text-slate-500">{teacher.email}</p>
                                             </div>
                                             <div className="flex flex-wrap gap-2 text-xs font-bold">
+                                                <span className={`rounded-full px-3 py-1 ${
+                                                    teacher.estado === "ACTIVO"
+                                                        ? "bg-emerald-100 text-emerald-700"
+                                                        : "bg-slate-200 text-slate-600"
+                                                }`}>
+                                                    {teacher.estado}
+                                                </span>
                                                 <span className="rounded-full bg-slate-900 px-3 py-1 text-white">{teacher.codigoDocente}</span>
                                                 <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">{teacher.especialidad}</span>
                                                 <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">
                                                     {teacher.assignedSections} secciones
                                                 </span>
+                                                <button
+                                                    type="button"
+                                                    disabled={updatingProfile !== null || (teacher.estado === "ACTIVO" && teacher.assignedSections > 0)}
+                                                    title={teacher.estado === "ACTIVO" && teacher.assignedSections > 0
+                                                        ? "Retira las secciones asignadas antes de deshabilitar"
+                                                        : undefined}
+                                                    onClick={() => void handleStatusChange("teacher", teacher.id, teacher.estado, teacher.fullName)}
+                                                    className={`rounded-full px-3 py-1 transition disabled:cursor-not-allowed disabled:opacity-45 ${
+                                                        teacher.estado === "ACTIVO"
+                                                            ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                                                            : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                                    }`}
+                                                >
+                                                    {updatingProfile === `teacher-${teacher.id}`
+                                                        ? "Actualizando..."
+                                                        : teacher.estado === "ACTIVO" ? "Deshabilitar" : "Habilitar"}
+                                                </button>
                                             </div>
                                         </div>
                                     </article>
@@ -277,17 +331,19 @@ function AdminUsers() {
                                     <tr>
                                         <th className="pb-3 font-bold">Alumno</th>
                                         <th className="pb-3 font-bold">Codigo</th>
+                                        <th className="pb-3 font-bold">Estado</th>
                                         <th className="pb-3 font-bold">Estado academico</th>
+                                        <th className="pb-3 text-right font-bold">Accion</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={3} className="py-6 text-slate-500">Cargando alumnos...</td>
+                                            <td colSpan={5} className="py-6 text-slate-500">Cargando alumnos...</td>
                                         </tr>
                                     ) : filteredStudents.length === 0 ? (
                                         <tr>
-                                            <td colSpan={3} className="py-6 text-slate-500">No hay alumnos que coincidan con la busqueda.</td>
+                                            <td colSpan={5} className="py-6 text-slate-500">No hay alumnos que coincidan con la busqueda.</td>
                                         </tr>
                                     ) : filteredStudents.slice(0, 8).map((student) => (
                                         <tr key={student.id}>
@@ -296,10 +352,38 @@ function AdminUsers() {
                                                 <div className="text-xs text-slate-500">{student.email}</div>
                                             </td>
                                             <td className="py-4 pr-4 text-slate-700">{student.codigoEstudiante}</td>
+                                            <td className="py-4 pr-4">
+                                                <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                                                    student.estado === "ACTIVO"
+                                                        ? "bg-emerald-100 text-emerald-700"
+                                                        : "bg-slate-200 text-slate-600"
+                                                }`}>
+                                                    {student.estado}
+                                                </span>
+                                            </td>
                                             <td className="py-4">
                                                 <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
                                                     {student.estadoAcademico}
                                                 </span>
+                                            </td>
+                                            <td className="py-4 text-right">
+                                                <button
+                                                    type="button"
+                                                    disabled={updatingProfile !== null || (student.estado === "ACTIVO" && student.enrollmentCount > 0)}
+                                                    title={student.estado === "ACTIVO" && student.enrollmentCount > 0
+                                                        ? "Retira las matriculas antes de deshabilitar"
+                                                        : undefined}
+                                                    onClick={() => void handleStatusChange("student", student.id, student.estado, student.fullName)}
+                                                    className={`rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-45 ${
+                                                        student.estado === "ACTIVO"
+                                                            ? "bg-rose-50 text-rose-700 hover:bg-rose-100"
+                                                            : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                                    }`}
+                                                >
+                                                    {updatingProfile === `student-${student.id}`
+                                                        ? "Actualizando..."
+                                                        : student.estado === "ACTIVO" ? "Deshabilitar" : "Habilitar"}
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
