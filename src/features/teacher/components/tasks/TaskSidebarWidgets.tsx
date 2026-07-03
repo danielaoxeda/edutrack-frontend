@@ -1,30 +1,34 @@
 import { FilePlus, CloudUpload, CalendarDays, Send, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { UrgentTaskItem } from "../../data/teacherDashboardData";
 
 interface TaskSidebarWidgetsProps {
     urgentTasks: UrgentTaskItem[];
 }
 
-export function TaskQuickActionsCard() {
+interface TaskQuickActionsCardProps {
+    onCreateTask: () => void;
+}
+
+export function TaskQuickActionsCard({ onCreateTask }: TaskQuickActionsCardProps) {
+    const navigate = useNavigate();
     const actions = [
-        { label: "Crear tarea", icon: FilePlus, color: "text-blue-600 bg-blue-50 border-blue-100" },
-        { label: "Subir material", icon: CloudUpload, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
-        { label: "Programar eval.", icon: CalendarDays, color: "text-amber-600 bg-amber-50 border-amber-100" },
-        { label: "Enviar aviso", icon: Send, color: "text-violet-600 bg-violet-50 border-violet-100" },
+        { label: "Crear tarea", icon: FilePlus, color: "text-blue-600 bg-blue-50 border-blue-100", action: onCreateTask },
+        { label: "Subir material", icon: CloudUpload, color: "text-emerald-600 bg-emerald-50 border-emerald-100", action: () => navigate("/cursos-docente") },
+        { label: "Programar eval.", icon: CalendarDays, color: "text-amber-600 bg-amber-50 border-amber-100", action: onCreateTask },
+        { label: "Enviar aviso", icon: Send, color: "text-violet-600 bg-violet-50 border-violet-100", action: () => navigate("/mensajes-docente") },
     ];
 
     return (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 pb-3 border-b border-slate-100">
-                Accesos Rápidos
-            </h2>
-
             <div className="grid grid-cols-2 gap-3">
                 {actions.map((action) => {
                     const Icon = action.icon;
                     return (
-                        <div
+                        <button
+                            type="button"
                             key={action.label}
+                            onClick={action.action}
                             className="bg-white hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300 p-4 rounded-xl flex flex-col items-center justify-center gap-2 transition duration-200 cursor-pointer shadow-sm group text-center"
                         >
                             <div className={`p-2.5 rounded-lg border ${action.color} flex items-center justify-center shrink-0 shadow-sm/5 transition-transform duration-200 group-hover:scale-105`}>
@@ -33,7 +37,7 @@ export function TaskQuickActionsCard() {
                             <span className="text-[11px] font-bold text-slate-600 group-hover:text-slate-900 transition-colors tracking-tight mt-0.5 leading-snug">
                                 {action.label}
                             </span>
-                        </div>
+                        </button>
                     );
                 })}
             </div>
@@ -52,6 +56,7 @@ export function UrgentTasksCard({ urgentTasks }: TaskSidebarWidgetsProps) {
             </div>
 
             <div className="space-y-4">
+                {urgentTasks.length === 0 && <p className="py-2 text-sm text-slate-500">No hay tareas urgentes.</p>}
                 {urgentTasks.map((task) => {
                     const isToday = task.dueText.toLowerCase().includes("hoy");
                     const dueClass = isToday ? "text-red-500 font-extrabold" : "text-slate-400 font-semibold";

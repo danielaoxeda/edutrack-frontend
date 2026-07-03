@@ -16,6 +16,7 @@ function TaskSubPanels({ recentSubmissions, urgentTasks }: TaskSubPanelsProps) {
                 </h2>
 
                 <div className="space-y-4">
+                    {recentSubmissions.length === 0 && <p className="py-4 text-sm text-slate-500">Aun no hay entregas registradas.</p>}
                     {recentSubmissions.map((sub) => (
                         <div key={sub.id} className="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-slate-50 transition duration-150 group">
                             <div className="flex items-center gap-3">
@@ -46,6 +47,7 @@ function TaskSubPanels({ recentSubmissions, urgentTasks }: TaskSubPanelsProps) {
                 </h2>
 
                 <div className="space-y-4">
+                    {urgentTasks.length === 0 && <p className="py-4 text-sm text-slate-500">No hay calificaciones pendientes.</p>}
                     {urgentTasks.map((task) => {
                         const isToday = task.dueText.toLowerCase().includes("hoy");
                         return (

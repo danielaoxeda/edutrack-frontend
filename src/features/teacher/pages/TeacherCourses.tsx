@@ -6,7 +6,14 @@ import CourseCardDetail from "../components/courses/CourseCardDetail";
 import QuickActionsCard from "../components/courses/QuickActionsCard";
 import UpcomingClassesCard from "../components/courses/UpcomingClassesCard";
 import AlertsAndPendingCard from "../components/courses/AlertsAndPendingCard";
+import CreateActivityModal from "../components/courses/CreateActivityModal";
 import { loadTeacherDashboard } from "../api/teacherDashboardApi";
+import {
+    createTeacherActivity,
+    loadTeacherActivityOptions,
+    type TeacherActivityOption,
+    type TeacherActivityPayload,
+} from "../api/teacherWorkspaceApi";
 import type {
     AcademicAlertItem,
     ClassScheduleItem,
@@ -23,6 +30,10 @@ function TeacherCourses() {
     const [pendingReviews, setPendingReviews] = useState<PendingReviewItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [feedback, setFeedback] = useState<string | null>(null);
+    const [activityModalOpen, setActivityModalOpen] = useState(false);
+    const [activityOptions, setActivityOptions] = useState<TeacherActivityOption[]>([]);
+    const [savingActivity, setSavingActivity] = useState(false);
 
     useEffect(() => {
         let alive = true;
@@ -55,6 +66,40 @@ function TeacherCourses() {
         };
     }, []);
 
+    const openActivityModal = async () => {
+        setError(null);
+        try {
+            const options = await loadTeacherActivityOptions();
+            if (options.length === 0) {
+                setError("No tienes secciones asignadas para crear actividades.");
+                return;
+            }
+            setActivityOptions(options);
+            setActivityModalOpen(true);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "No se pudieron cargar tus secciones");
+        }
+    };
+
+    const handleCreateActivity = async (payload: TeacherActivityPayload) => {
+        setSavingActivity(true);
+        setError(null);
+        try {
+            await createTeacherActivity(payload);
+            const dashboard = await loadTeacherDashboard();
+            setCourses(dashboard.courses);
+            setSchedule(dashboard.schedule);
+            setAlerts(dashboard.alerts);
+            setPendingReviews(dashboard.pendingReviews);
+            setFeedback("Actividad publicada correctamente.");
+            setActivityModalOpen(false);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "No se pudo crear la actividad");
+        } finally {
+            setSavingActivity(false);
+        }
+    };
+
     const filteredCourses = courses.filter((course) => {
         const matchesSearch =
             course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -72,6 +117,11 @@ function TeacherCourses() {
                         {error}
                     </div>
                 )}
+                {feedback && (
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                        {feedback}
+                    </div>
+                )}
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
@@ -83,7 +133,7 @@ function TeacherCourses() {
                         </p>
                     </div>
 
-                    <button className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 hover:border-emerald-500 text-white font-bold py-3 px-5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-sm text-sm shrink-0 self-start sm:self-auto group">
+                    <button type="button" onClick={() => void openActivityModal()} className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 hover:border-emerald-500 text-white font-bold py-3 px-5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-sm text-sm shrink-0 self-start sm:self-auto group">
                         <Plus size={16} className="text-white group-hover:scale-110 transition-transform duration-200" />
                         <span>Crear actividad</span>
                     </button>
@@ -133,6 +183,16 @@ function TeacherCourses() {
                             />
                         </div>
                     </div>
+                )}
+
+                {activityModalOpen && (
+                    <CreateActivityModal
+                        options={activityOptions}
+                        saving={savingActivity}
+                        error={error}
+                        onClose={() => setActivityModalOpen(false)}
+                        onSubmit={handleCreateActivity}
+                    />
                 )}
             </div>
         </TeacherLayout>
