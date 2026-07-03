@@ -15,12 +15,19 @@ function StudentAlertsCard({ alerts }: StudentAlertsCardProps) {
                         Alertas Académicas
                     </h2>
                 </div>
-                <span className="text-[10px] font-extrabold bg-red-600 text-white px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
-                    {alerts.length} Nuevas
-                </span>
+                {alerts.length > 0 && (
+                    <span className="text-[10px] font-extrabold bg-red-600 text-white px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
+                        {alerts.length} nuevas
+                    </span>
+                )}
             </div>
 
             <div className="space-y-4 mb-4">
+                {alerts.length === 0 && (
+                    <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                        No hay alertas academicas con los datos registrados.
+                    </p>
+                )}
                 {alerts.map((alert) => {
                     const isAttendance = alert.type === "attendance";
                     const isGrade = alert.type === "grade";
@@ -60,9 +67,6 @@ function StudentAlertsCard({ alerts }: StudentAlertsCardProps) {
                 })}
             </div>
 
-            <button className="w-full text-center py-2.5 px-4 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-blue-600 hover:text-blue-700 text-xs font-bold rounded-xl transition duration-200 shadow-sm">
-                Ver todas las alertas
-            </button>
         </div>
     );
 }

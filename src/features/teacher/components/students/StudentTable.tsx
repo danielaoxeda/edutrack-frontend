@@ -4,9 +4,12 @@ import type { StudentItem } from "../../data/teacherDashboardData";
 interface TableProps {
     students: StudentItem[];
     totalCount: number;
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
 }
 
-function StudentTable({ students, totalCount }: TableProps) {
+function StudentTable({ students, totalCount, currentPage, totalPages, onPageChange }: TableProps) {
     
     // Status Badge Helpers
     const getStatusBadge = (status: StudentItem["status"]) => {
@@ -27,6 +30,12 @@ function StudentTable({ students, totalCount }: TableProps) {
                 return (
                     <span className="text-[10px] font-extrabold px-2.5 py-1 rounded bg-rose-50 text-rose-700 border border-rose-100 uppercase tracking-wide animate-pulse">
                         En Riesgo
+                    </span>
+                );
+            case "sin_evaluacion":
+                return (
+                    <span className="rounded border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-blue-700">
+                        Sin evaluar
                     </span>
                 );
             default:
@@ -105,8 +114,8 @@ function StudentTable({ students, totalCount }: TableProps) {
 
                                 {/* Average Grade */}
                                 <td className="px-6 py-4">
-                                    <span className={`text-sm font-extrabold ${row.averageGrade < 3.0 ? "text-rose-600" : "text-slate-800"}`}>
-                                        {row.averageGrade.toFixed(1)}
+                                    <span className={`text-sm font-extrabold ${row.averageGrade !== null && row.averageGrade < 3.0 ? "text-rose-600" : "text-slate-800"}`}>
+                                        {row.averageGrade === null ? "--" : row.averageGrade.toFixed(1)}
                                     </span>
                                 </td>
 
@@ -115,12 +124,12 @@ function StudentTable({ students, totalCount }: TableProps) {
                                     <div className="flex items-center gap-3 min-w-[100px]">
                                         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200/20">
                                             <div
-                                                className={`h-full rounded-full ${getAttendanceBarColor(row.attendance)}`}
-                                                style={{ width: `${row.attendance}%` }}
+                                                className={`h-full rounded-full ${row.attendance === null ? "bg-slate-300" : getAttendanceBarColor(row.attendance)}`}
+                                                style={{ width: `${row.attendance ?? 0}%` }}
                                             />
                                         </div>
-                                        <span className={`text-xs font-extrabold shrink-0 ${row.attendance < 75 ? "text-rose-600" : "text-slate-700"}`}>
-                                            {row.attendance}%
+                                        <span className={`text-xs font-extrabold shrink-0 ${row.attendance !== null && row.attendance < 75 ? "text-rose-600" : "text-slate-700"}`}>
+                                            {row.attendance === null ? "--" : `${row.attendance}%`}
                                         </span>
                                     </div>
                                 </td>
@@ -138,24 +147,25 @@ function StudentTable({ students, totalCount }: TableProps) {
             {/* Pagination footer */}
             <div className="bg-slate-50/50 border-t border-slate-100 px-6 py-4 flex flex-col sm:flex-row gap-3 items-center justify-between">
                 <span className="text-xs font-bold text-slate-400">
-                    Mostrando 1-{students.length} de {totalCount} estudiantes
+                    Mostrando {totalCount === 0 ? 0 : (currentPage - 1) * 5 + 1}-{Math.min(currentPage * 5, totalCount)} de {totalCount} estudiantes
                 </span>
                 
                 {/* Pagination Controls */}
                 <div className="flex items-center gap-1">
-                    <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 shadow-sm transition disabled:opacity-50" disabled>
+                    <button type="button" onClick={() => onPageChange(currentPage - 1)} className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 shadow-sm transition disabled:opacity-50" disabled={currentPage === 1}>
                         <ChevronLeft size={16} />
                     </button>
-                    <button className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                        1
-                    </button>
-                    <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center shadow-sm">
-                        2
-                    </button>
-                    <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center shadow-sm">
-                        3
-                    </button>
-                    <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 shadow-sm transition">
+                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                        <button
+                            key={page}
+                            type="button"
+                            onClick={() => onPageChange(page)}
+                            className={`h-8 w-8 rounded-lg text-xs font-bold shadow-sm ${page === currentPage ? "bg-blue-600 text-white" : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button type="button" onClick={() => onPageChange(currentPage + 1)} className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 shadow-sm transition disabled:opacity-50" disabled={currentPage >= totalPages}>
                         <ChevronRight size={16} />
                     </button>
                 </div>
