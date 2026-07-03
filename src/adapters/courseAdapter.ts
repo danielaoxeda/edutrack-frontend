@@ -13,7 +13,6 @@ export const toStudentCourse = (
 ): StudentCourse => {
 
     return {
-
         id: course.id,
         codigo: course.codigo,
         nombre: course.nombre,
@@ -24,7 +23,6 @@ export const toStudentCourse = (
         periodo: period.nombre,
         actividadesPendientes: 0,
         docente: ""
-
     };
 
 };

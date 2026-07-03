@@ -7,6 +7,7 @@ function StudentHeader() {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const { user } = useAuth();
+    console.log("USER AUTH:", user);
 
     const studentName = user?.nombre?.trim() || "Estudiante";
     const firstName = studentName.split(/\s+/)[0];

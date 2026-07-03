@@ -37,10 +37,6 @@ export interface CriterioEvaluacion {
     porcentaje: number;
 }
 
-/**
- * 🔥 FIX IMPORTANTE:
- * eliminamos any y usamos tipos reales o null
- */
 export interface Entrega {
     id: number;
     actividad?: Actividad;
@@ -79,7 +75,7 @@ export interface SesionClase {
 export interface Matricula {
     id: number;
     estudiante: unknown;
-    seccion: Seccion;
+    seccionId: number;
     fechaMatricula: string;
     estado: 'ACTIVO' | 'INACTIVO' | 'RETIRADO';
     entregas?: Entrega[];

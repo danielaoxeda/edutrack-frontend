@@ -17,6 +17,7 @@ export const useActivities = (estudianteId?: number) => {
 
     useEffect(() => {
         if (!estudianteId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActivities([]);
             setSessions([]);
             setLoading(false);
@@ -35,7 +36,7 @@ export const useActivities = (estudianteId?: number) => {
                 ]);
 
                 const seccionIds = matriculas
-                    .map(m => m.seccion?.id)
+                    .map(m => m.seccionId)
                     .filter((id): id is number => id !== null && id !== undefined);
 
                 const filteredActivities = allActivities.filter(act => {

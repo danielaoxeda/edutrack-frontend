@@ -35,7 +35,9 @@ export const courseService = {
     },
 
     getSection: async (id: number): Promise<SeccionDTO> => {
-        const response = await api.get(`/secciones/${id}`);
+        console.log("Buscando sección:", id);
+        const response = await api.get(`/secciones/${id}`)
+        console.log("Sección:", response.data);
         return response.data;
     },
 
