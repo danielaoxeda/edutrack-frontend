@@ -1,4 +1,4 @@
-import { Search, Filter, BookOpen, ListTodo } from "lucide-react";
+import { BookOpen, ListTodo } from "lucide-react";
 import { useMemo } from "react";
 
 import StudentLayout from "../layout/StudentLayout";
@@ -80,24 +80,6 @@ export default function CoursesPage() {
                         </p>
                     </div>
 
-                    <div className="flex gap-4">
-                        <div className="relative">
-                            <Search
-                                className="absolute left-3 top-3 text-slate-400"
-                                size={20}
-                            />
-
-                            <input
-                                type="text"
-                                placeholder="Buscar curso..."
-                                className="pl-10 pr-4 py-3 rounded-full bg-white border border-slate-200 outline-none focus:ring-2 focus:ring-blue-600 w-72"
-                            />
-                        </div>
-
-                        <button className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50">
-                            <Filter size={20} />
-                        </button>
-                    </div>
                 </header>
 
                 {/* GRID */}
