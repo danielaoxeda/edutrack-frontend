@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../ui/Input";
-import { login } from "../../features/auth/api/authApi";
-import { setAuthSession } from "../../lib/auth";
+import { useAuth } from "../../context/AuthContext";
+import {resolveDashboard} from "../../lib/routes.ts";
 
 const LoginForm = () => {
     const [email, setEmail] = useState("");
@@ -10,6 +10,7 @@ const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,16 +19,8 @@ const LoginForm = () => {
             setLoading(true);
             setError(null);
 
-            const session = await login({ email, password });
-            setAuthSession(session);
-
-            if (session.role === "ADMIN") {
-                navigate("/dashboard-admin");
-            } else if (session.role === "TEACHER") {
-                navigate("/dashboard-docente");
-            } else {
-                navigate("/dashboard-estudiante");
-            }
+            const loggedUser = await login(email, password);
+            navigate(resolveDashboard(loggedUser.rol));
         } catch (loginError) {
             setError(loginError instanceof Error ? loginError.message : "No se pudo iniciar sesión");
         } finally {

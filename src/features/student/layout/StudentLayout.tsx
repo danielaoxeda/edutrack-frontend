@@ -1,8 +1,8 @@
-import Sidebar from "../components/shared/Sidebar";
-import Header from "../components/shared/Header";
-import Footer from "../components/shared/Footer";
+import Footer from "../../../components/shared/Footer.tsx";
 
-import { studentMenu } from "../features/student/navigation/studentMenu.ts";
+import { studentMenu } from "../navigation/studentMenu.ts";
+import StudentHeader from "./StudentHeader.tsx";
+import StudentSidebar from "./StudentSidebar.tsx";
 
 interface Props {
     children: React.ReactNode;
@@ -11,13 +11,13 @@ interface Props {
 function StudentLayout({ children }: Props) {
     return (
         <div className="min-h-screen bg-slate-50 flex">
-            <Sidebar
+            <StudentSidebar
                 menu={studentMenu}
                 title="EduTrack"
             />
 
             <main className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-                <Header />
+                <StudentHeader />
 
                 <div className="flex-1 p-6">
                     {children}

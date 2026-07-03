@@ -2,7 +2,6 @@ import {
     LayoutDashboard,
     FileText,
     GraduationCap,
-    Calendar,
     Settings,
 } from "lucide-react";
 
@@ -13,20 +12,16 @@ export const studentMenu = [
         path: "/dashboard-estudiante",
     },
     {
-        label: "Actividades",
+        label: "Cursos",
         icon: FileText,
-        path: "/actividades-estudiante",
+        path: "/cursos-estudiante",
     },
     {
-        label: "Certificaciones",
+        label: "Historial académico",
         icon: GraduationCap,
-        path: "/certificaciones-estudiante",
+        path: "/historial-estudiante",
     },
-    {
-        label: "Calendario",
-        icon: Calendar,
-        path: "/calendario-estudiante",
-    },
+
     {
         label: "Configuración",
         icon: Settings,

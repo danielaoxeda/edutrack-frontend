@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { getAuthSession } from "../../lib/auth";
+import { useAuth } from "../../context/AuthContext";
+import {resolveDashboard} from "../../lib/routes.ts";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -7,22 +8,16 @@ type ProtectedRouteProps = {
 };
 
 function ProtectedRoute({ children, allow }: ProtectedRouteProps) {
-    const session = getAuthSession();
+    const { user, isLoading } = useAuth();
 
-    if (!session?.token) {
+    if (isLoading) return null;
+
+    if (!user) {
         return <Navigate to="/auth" replace />;
     }
 
-    if (allow && allow.length > 0 && !allow.includes(session.role)) {
-        if (session.role === "ADMIN") {
-            return <Navigate to="/dashboard-admin" replace />;
-        }
-
-        if (session.role === "TEACHER") {
-            return <Navigate to="/dashboard-docente" replace />;
-        }
-
-        return <Navigate to="/dashboard-estudiante" replace />;
+    if (allow && allow.length > 0 && !allow.includes(user.rol)) {
+        return <Navigate to={resolveDashboard(user.rol)} replace />;
     }
 
     return <>{children}</>;

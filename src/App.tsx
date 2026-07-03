@@ -10,7 +10,8 @@ import AdminCoursesPage from "./features/admin/pages/AdminCourses";
 import AdminDashboardPage from "./features/admin/pages/AdminDashboard";
 import AdminSettingsPage from "./features/admin/pages/AdminSettings";
 import AdminUsersPage from "./features/admin/pages/AdminUsers";
-import ActivitiesPage from "./features/student/pages/ActivitiesPage";
+import CoursesPage from "./features/student/pages/CoursesPage.tsx"
+import HistoryPage from "./features/student/pages/HistoryPage.tsx";
 import DashboardEstudiantePage from "./features/student/pages/StudentDashboard";
 import SettingsPage from "./features/student/pages/SettingsPage";
 import TeacherAttendancePage from "./features/teacher/pages/TeacherAttendance";
@@ -39,10 +40,18 @@ function App() {
                     }
                 />
                 <Route
-                    path="/actividades-estudiante"
+                    path="/cursos-estudiante"
                     element={
                         <ProtectedRoute allow={["STUDENT", "TEACHER", "ADMIN"]}>
-                            <ActivitiesPage />
+                            <CoursesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/historial-estudiante"
+                    element={
+                        <ProtectedRoute allow={["STUDENT", "TEACHER", "ADMIN"]}>
+                            <HistoryPage />
                         </ProtectedRoute>
                     }
                 />

@@ -1,8 +1,7 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../features/auth/api/authApi";
-import { setAuthSession } from "../lib/auth";
-
+import {useEffect, useState} from "react";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {resolveDashboard} from "../lib/routes.ts";
 type AuthTab = "login" | "register";
 
 const AuthPage = () => {
@@ -10,19 +9,42 @@ const AuthPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null)
+
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const { hash } = useLocation();
 
-    const resolveDashboard = (role: string) => {
-        if (role === "ADMIN") {
-            return "/dashboard-admin";
+    useEffect(() => {
+        if (!hash) return;
+
+        const id = hash.replace("#", "");
+        const target = document.getElementById(id);
+
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
         }
+    }, [hash]);
 
-        if (role === "TEACHER") {
-            return "/dashboard-docente";
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            setLoading(true);
+            setError(null);
+
+            const loggedUser = await login(email, password);
+
+            navigate(resolveDashboard(loggedUser.rol));
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "No se pudo iniciar sesión"
+            );
+        } finally {
+            setLoading(false);
         }
-
-        return "/dashboard-estudiante";
     };
 
     return (
@@ -40,8 +62,7 @@ const AuthPage = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="font-label-md text-label-md text-primary font-bold transition-opacity active:opacity-80" onClick={() => setTab("login")}>Ingresar</button>
-                        <button className="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity" onClick={() => setTab("register")}>Comenzar</button>
+                        <button className="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity" onClick={() => setTab("login")}>Ingresar</button>
                     </div>
                 </div>
             </nav>
@@ -107,16 +128,6 @@ const AuthPage = () => {
                                     Iniciar sesión
                                 </button>
 
-                                <button
-                                    className={`flex-1 py-4 font-label-md text-label-md transition-all ${
-                                        tab === "register"
-                                            ? "text-primary border-b-2 border-primary bg-surface-container-low font-bold"
-                                            : "text-on-surface-variant hover:bg-surface-variant/10"
-                                    }`}
-                                    onClick={() => setTab("register")}
-                                >
-                                    Registrarse
-                                </button>
                             </div>
 
                             <div className="p-8">
@@ -129,22 +140,7 @@ const AuthPage = () => {
 
                                         <form
                                             className="space-y-4"
-                                            onSubmit={async (event) => {
-                                                event.preventDefault();
-
-                                                try {
-                                                    setLoading(true);
-                                                    setError(null);
-
-                                                    const session = await login({ email, password });
-                                                    setAuthSession(session);
-                                                    navigate(resolveDashboard(session.role));
-                                                } catch (authError) {
-                                                    setError(authError instanceof Error ? authError.message : "No se pudo iniciar sesión");
-                                                } finally {
-                                                    setLoading(false);
-                                                }
-                                            }}
+                                            onSubmit={handleSubmit}
                                         >
                                             {error && (
                                                 <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">

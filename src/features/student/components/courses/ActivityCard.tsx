@@ -1,0 +1,106 @@
+import {
+    CalendarDays,
+    BookOpen,
+    Clock3,
+    CheckCircle2,
+    FileText,
+    ArrowRight,
+} from "lucide-react";
+
+import type { ActivityCardProps } from "../../../../types/ui";
+
+const statusStyles = {
+    Pendiente: {
+        badge: "bg-amber-100 text-amber-700",
+        icon: Clock3,
+    },
+    Entregado: {
+        badge: "bg-emerald-100 text-emerald-700",
+        icon: CheckCircle2,
+    },
+    Calificado: {
+        badge: "bg-blue-100 text-blue-700",
+        icon: FileText,
+    },
+};
+
+export default function ActivityCard({
+                                         courseName,
+                                         title,
+                                         deadline,
+                                         status,
+                                     }: ActivityCardProps) {
+
+    const currentStatus = statusStyles[status];
+    const StatusIcon = currentStatus.icon;
+
+    return (
+        <div className="group bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md hover:border-blue-200 transition-all duration-300">
+
+            <div className="flex items-start justify-between gap-6">
+
+                {/* LEFT */}
+
+                <div className="flex gap-4 flex-1">
+
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+
+                        <BookOpen
+                            size={22}
+                            className="text-blue-600"
+                        />
+
+                    </div>
+
+                    <div className="flex-1">
+
+                        <span className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+
+                            {courseName}
+
+                        </span>
+
+                        <h3 className="text-lg font-bold text-slate-800 mt-1 group-hover:text-blue-600 transition">
+
+                            {title}
+
+                        </h3>
+
+                        <div className="flex items-center gap-2 mt-3 text-sm text-slate-500">
+
+                            <CalendarDays size={16} />
+
+                            <span>{deadline}</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {/* RIGHT */}
+
+                <div className="flex flex-col items-end gap-4">
+
+                    <span
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${currentStatus.badge}`}
+                    >
+                        <StatusIcon size={14} />
+                        {status}
+                    </span>
+
+                    <button className="flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-700 transition">
+
+                        Ver actividad
+
+                        <ArrowRight size={16} />
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    );
+}

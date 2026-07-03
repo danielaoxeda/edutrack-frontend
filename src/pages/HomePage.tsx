@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { login } from "../features/auth/api/authApi";
-import { setAuthSession } from "../lib/auth";
+import {useAuth} from "../context/AuthContext.tsx";
+import {resolveDashboard} from "../lib/routes.ts";
 
 function HomePage() {
     const [email, setEmail] = useState("");
@@ -9,6 +9,7 @@ function HomePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login } = useAuth();
     const { hash } = useLocation();
 
     const scrollToId = (id: string) => {
@@ -17,26 +18,12 @@ function HomePage() {
             target.scrollIntoView({ behavior: "smooth" });
         }
     };
-
-    const resolveDashboard = (role: string) => {
-        if (role === "ADMIN") {
-            return "/dashboard-admin";
-        }
-
-        if (role === "TEACHER") {
-            return "/dashboard-docente";
-        }
-
-        return "/dashboard-estudiante";
-    };
-
     useEffect(() => {
-        if (!hash) {
-            return;
-        }
+        if (!hash) return;
 
         const id = hash.replace("#", "");
         const target = document.getElementById(id);
+
         if (target) {
             target.scrollIntoView({ behavior: "smooth" });
         }
@@ -47,7 +34,7 @@ function HomePage() {
             <nav className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur">
                 <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                     <Link className="flex items-center gap-2" to="/">
-                        <span className="text-xl font-bold text-blue-900">EduTrack</span>
+                        <img src="/edutrack.logo.png" alt="EduTrack Logo" className="h-12 w-auto" />
                     </Link>
 
                     <div className="hidden items-center gap-8 md:flex">
@@ -56,12 +43,6 @@ function HomePage() {
                         <button className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-900" onClick={() => scrollToId("support")}>Soporte</button>
                     </div>
 
-                    <button
-                        className="rounded-lg bg-blue-900 px-6 py-2 text-sm font-medium text-white transition-opacity active:opacity-80"
-                        onClick={() => navigate("/auth")}
-                    >
-                        Ingresar
-                    </button>
                 </div>
             </nav>
 
@@ -79,26 +60,26 @@ function HomePage() {
                     <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
                         <div className="lg:col-span-7">
                             <span className="mb-4 inline-block rounded-full bg-blue-100 px-4 py-1 text-xs font-semibold text-blue-800">
-                                Sistema de Gestion Academica v4.0
+                                Sistema de Gestión Académica Simplificado
                             </span>
                             <h1 className="mb-6 max-w-2xl text-5xl font-bold leading-tight text-slate-900">
-                                Gestion Academica <span className="text-blue-900">Simplificada</span>
+                                Tu educación siempre en <span className="text-blue-900">EduTrack</span>
                             </h1>
                             <p className="mb-8 max-w-xl text-lg leading-7 text-slate-600">
-                                Optimiza la administracion escolar con una plataforma robusta disenada para educadores modernos. Dashboards en tiempo real y seguridad JWT.
+                                Transforma la administración educativa con una plataforma diseñada para el educador moderno. Conecta a tu comunidad escolar, visualiza el progreso en tiempo real y garantiza la seguridad de tus datos con tecnología de vanguardia.
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <button
                                     className="flex items-center gap-2 rounded-xl bg-blue-900 px-8 py-4 text-sm font-medium text-white shadow-lg transition-all hover:bg-blue-800"
                                     onClick={() => scrollToId("features")}
                                 >
-                                    Explorar Funciones
+                                    Explorar funciones
                                 </button>
                                 <button
                                     className="rounded-xl border border-slate-400 px-8 py-4 text-sm font-medium text-slate-800 transition-all hover:bg-slate-100"
-                                    onClick={() => navigate("/auth")}
+                                    onClick={() => navigate("/")}
                                 >
-                                    Ver Demo
+                                    Pedir soporte
                                 </button>
                             </div>
                         </div>
@@ -106,8 +87,8 @@ function HomePage() {
                         <div className="lg:col-span-5" id="login-section">
                             <div className="rounded-xl border-t-4 border-blue-900 bg-white/80 p-8 shadow-2xl backdrop-blur-xl">
                                 <div className="mb-8 text-center">
-                                    <h2 className="mb-1 text-2xl font-semibold text-slate-900">Acceso Institucional</h2>
-                                    <p className="text-sm text-slate-600">Ingresa tus credenciales para continuar</p>
+                                    <h2 className="mb-1 text-2xl font-semibold text-slate-700">La nueva experiencia digital de aprendizaje</h2>
+                                    <p className="text-sm text-slate-600">Ingresa tus datos para <strong>iniciar sesión</strong></p>
                                 </div>
 
                                 <form
@@ -118,11 +99,16 @@ function HomePage() {
                                         try {
                                             setLoading(true);
                                             setError(null);
-                                            const session = await login({ email, password });
-                                            setAuthSession(session);
-                                            navigate(resolveDashboard(session.role));
+
+                                            const loggedUser = await login(email, password);
+
+                                            navigate(resolveDashboard(loggedUser.rol));
                                         } catch (authError) {
-                                            setError(authError instanceof Error ? authError.message : "No se pudo iniciar sesion");
+                                            setError(
+                                                authError instanceof Error
+                                                    ? authError.message
+                                                    : "No se pudo iniciar sesión"
+                                            );
                                         } finally {
                                             setLoading(false);
                                         }
@@ -135,7 +121,7 @@ function HomePage() {
                                     )}
 
                                     <div className="space-y-1">
-                                        <label className="text-sm font-medium text-slate-800">Correo Electronico</label>
+                                        <label className="text-sm font-medium text-slate-800">Correo institucional</label>
                                         <input
                                             className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900"
                                             placeholder="usuario@edutrack.edu"
@@ -148,8 +134,8 @@ function HomePage() {
 
                                     <div className="space-y-1">
                                         <div className="flex items-center justify-between">
-                                            <label className="text-sm font-medium text-slate-800">Contrasena</label>
-                                            <Link className="text-xs font-medium text-blue-900 hover:underline" to="/auth">Olvide mi clave</Link>
+                                            <label className="text-sm font-medium text-slate-800">Contraseña</label>
+                                            <Link className="text-xs font-medium text-blue-900 hover:underline" to="/auth">¿Olvidé mi contraseña?</Link>
                                         </div>
                                         <input
                                             className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 transition-all focus:border-blue-900 focus:ring-2 focus:ring-blue-900"
@@ -162,12 +148,12 @@ function HomePage() {
                                     </div>
 
                                     <button className="w-full rounded-lg bg-blue-900 py-3 text-sm font-medium text-white shadow-md transition-transform hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-70" type="submit" disabled={loading}>
-                                        {loading ? "Ingresando..." : "Iniciar Sesion Segura"}
+                                        {loading ? "Ingresando..." : "Iniciar sesión"}
                                     </button>
                                 </form>
 
                                 <div className="mt-8 border-t border-slate-200 pt-6 text-center">
-                                    <p className="text-sm text-slate-600">Protegido por encriptacion JWT y TLS 1.3</p>
+                                    <p className="text-sm text-slate-600">Cercana, dinámica y flexible</p>
                                 </div>
                             </div>
                         </div>

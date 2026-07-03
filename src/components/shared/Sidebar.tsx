@@ -78,14 +78,12 @@ function Sidebar({ menu = defaultMenu, title = "EduTrack" }: SidebarProps) {
                 <nav className="space-y-2 flex-1">
                     {menu.map((item) => {
                         const Icon = item.icon;
-                        // ✅ Estado activo dinámico según la URL
                         const isActive = pathname === item.path;
 
                         return (
                             <Link
                                 key={item.label}
                                 to={item.path}
-                                // ✅ Cierra el menú en móvil al hacer clic
                                 onClick={() => setOpen(false)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                                     isActive
