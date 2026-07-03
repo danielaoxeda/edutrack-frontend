@@ -25,9 +25,7 @@ function StudentSidebar({menu, title = "Edutrack"}: SidebarProps) {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const { logout, user } = useAuth();
-
-    const studentName = user?.nombre || "Estudiante";
+    const { logout } = useAuth();
 
     return (
         <>
@@ -69,7 +67,7 @@ function StudentSidebar({menu, title = "Edutrack"}: SidebarProps) {
                         <div>
                             <h2 className="text-lg font-bold">{title}</h2>
                             <span className="text-xs text-slate-400">
-                                Bienvenido, {studentName.split(" ")[0]}
+                                Academic Management
                             </span>
                         </div>
                     </div>
