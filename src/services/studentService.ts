@@ -20,4 +20,16 @@ export const studentService = {
         );
         return response.data;
     },
+
+
+    getCourses: async () => {
+        const response = await api.get(`/cursos`);
+        return response.data;
+    },
+
+
+    getAssignments: async () => {
+        const response = await api.get(`/actividades/visibles`);
+        return response.data
+    }
 };
