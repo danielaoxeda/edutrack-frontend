@@ -39,8 +39,9 @@ export interface CriterioEvaluacion {
 
 export interface Entrega {
     id: number;
-    actividad?: Actividad;
-    matricula: Matricula;
+    actividad: Actividad;
+    matricula: Matricula
+    seccion: Seccion;
     comentarioAlumno?: string;
     archivoUrl?: string;
     fechaEntrega: string;

@@ -15,19 +15,18 @@ import { toActivityCardProps } from "../../../adapters/activityAdapter";
 
 export default function CoursesPage() {
     const { estudianteId } = useAuth();
-    console.log("📌 LLAMANDO HOOK con estudianteId:", estudianteId);
+
     const {
         courses,
         loading: coursesLoading,
         error: coursesError,
-    } = useCourses(estudianteId);
-    console.log("ID enviado a useCourses:", estudianteId);
+    } = useCourses(estudianteId ?? undefined);
 
     const {
         activities,
         loading: activitiesLoading,
         error: activitiesError,
-    } = useActivities(estudianteId);
+    } = useActivities(estudianteId ?? undefined);
 
     const loading = coursesLoading || activitiesLoading;
     const error = coursesError || activitiesError;
@@ -65,8 +64,6 @@ export default function CoursesPage() {
             </StudentLayout>
         );
     }
-    console.log("Courses:", courses);
-    console.log("Cantidad:", courses.length);
     return (
         <StudentLayout>
             <div className="w-full">
