@@ -27,6 +27,7 @@ export interface AcademicStats {
 export interface AcademicEvent {
     id: number | string;
     type: "delivery" | "alert" | "grade" | "activity";
+    activityId?: number;
     title: string;
     subtitle: string;
     date: string;

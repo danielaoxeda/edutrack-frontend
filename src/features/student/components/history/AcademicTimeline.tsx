@@ -5,15 +5,17 @@ import {
     ClipboardList,
     Clock3,
     FileText,
+    UploadCloud,
 } from "lucide-react";
 
 import type { AcademicEvent } from "../../../../types/academicHistory";
 
 interface Props {
     events: AcademicEvent[];
+    onActivityAction?: (activityId: number) => void;
 }
 
-export default function TimelineCard({ events }: Props) {
+export default function TimelineCard({ events, onActivityAction }: Props) {
     if (events.length === 0) {
         return (
             <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
@@ -132,6 +134,17 @@ export default function TimelineCard({ events }: Props) {
                                                 <Clock3 size={14} />
                                                 Vencida
                                             </span>
+                                        )}
+
+                                        {isActivity && event.activityId && onActivityAction && (
+                                            <button
+                                                type="button"
+                                                onClick={() => onActivityAction(event.activityId!)}
+                                                className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+                                            >
+                                                <UploadCloud size={14} />
+                                                {event.status === "VENCIDA" ? "Entregar con retraso" : "Entregar ahora"}
+                                            </button>
                                         )}
                                     </div>
                                 )}

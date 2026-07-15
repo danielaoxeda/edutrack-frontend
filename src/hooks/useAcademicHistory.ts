@@ -8,7 +8,7 @@ import type {
 } from "../types/academicHistory";
 
 export const useAcademicHistory = (_estudianteId?: number) => {
-    const { workspace, loading, error } = useStudentWorkspace();
+    const { workspace, loading, error, refresh } = useStudentWorkspace();
 
     const stats = useMemo<AcademicStats | undefined>(() => {
         if (!workspace) {
@@ -37,6 +37,7 @@ export const useAcademicHistory = (_estudianteId?: number) => {
             .filter((activity) => activity.status === "PENDIENTE" || activity.status === "VENCIDA")
             .map((activity) => ({
                 id: `activity-${activity.id}`,
+                activityId: activity.id,
                 type: "activity",
                 title: activity.title,
                 subtitle: `${activity.courseName} - ${activity.sectionName}`,
@@ -75,6 +76,8 @@ export const useAcademicHistory = (_estudianteId?: number) => {
         stats,
         timeline,
         dashboard,
+        activities: workspace?.activities ?? [],
+        refresh,
         loading,
         error,
     };

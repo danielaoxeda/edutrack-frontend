@@ -2,6 +2,7 @@ import {
     GraduationCap,
     History,
 } from "lucide-react";
+import { useState } from "react";
 
 import StudentLayout from "../layout/StudentLayout";
 
@@ -11,18 +12,67 @@ import { useAuth } from "../../../context/AuthContext";
 import AcademicStatsGrid from "../components/history/AcademicStatsGrid.tsx";
 import TimelineCard from "../components/history/AcademicTimeline.tsx";
 import AcademicSummaryCard from "../components/history/AcademicSummaryCard.tsx";
+import ActivitySubmissionModal from "../components/courses/ActivitySubmissionModal.tsx";
+import {
+    submitStudentActivityDelivery,
+    type StudentWorkspaceActivity,
+} from "../api/studentWorkspaceApi.ts";
 
 export default function AcademicHistoryPage() {
 
     const { estudianteId } = useAuth();
+    const [selectedActivity, setSelectedActivity] = useState<StudentWorkspaceActivity | null>(null);
+    const [submissionError, setSubmissionError] = useState<string | null>(null);
+    const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const {
         summary,
         stats,
         timeline,
+        activities,
+        refresh,
         loading,
         error,
     } = useAcademicHistory(estudianteId ?? undefined);
+
+    const openActivityModal = (activityId: number) => {
+        const activity = activities.find((item) => item.id === activityId);
+
+        if (!activity) {
+            setSubmissionError("No se encontro la actividad seleccionada. Actualiza la pagina e intenta de nuevo.");
+            return;
+        }
+
+        setSubmissionError(null);
+        setSubmissionSuccess(null);
+        setSelectedActivity(activity);
+    };
+
+    const handleSubmitDelivery = async (payload: { comentarioAlumno: string; archivoUrl: string }) => {
+        if (!selectedActivity) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setSubmissionError(null);
+            await submitStudentActivityDelivery(selectedActivity.id, payload);
+            const updatedWorkspace = await refresh();
+            const updatedActivity = updatedWorkspace.activities.find((activity) => activity.id === selectedActivity.id);
+
+            if (updatedActivity) {
+                setSelectedActivity(updatedActivity);
+            }
+
+            setSubmissionSuccess("Entrega enviada correctamente. Tu historial ya fue actualizado.");
+            window.setTimeout(() => setSubmissionSuccess(null), 4000);
+        } catch (err) {
+            setSubmissionError(err instanceof Error ? err.message : "No se pudo enviar la actividad");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (error) {
         return (
@@ -147,6 +197,7 @@ export default function AcademicHistoryPage() {
 
                             <TimelineCard
                                 events={timeline}
+                                onActivityAction={openActivityModal}
                             />
 
                         )}
@@ -156,6 +207,23 @@ export default function AcademicHistoryPage() {
                 </div>
 
             </div>
+
+            {submissionSuccess && (
+                <div className="fixed bottom-6 right-6 z-40 max-w-sm rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 shadow-lg">
+                    {submissionSuccess}
+                </div>
+            )}
+
+            <ActivitySubmissionModal
+                activity={selectedActivity}
+                isSubmitting={isSubmitting}
+                error={submissionError}
+                onClose={() => {
+                    setSelectedActivity(null);
+                    setSubmissionError(null);
+                }}
+                onSubmit={handleSubmitDelivery}
+            />
 
         </StudentLayout>
     );
