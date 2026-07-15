@@ -24,7 +24,7 @@ export const useAcademicHistory = (_estudianteId?: number) => {
     }, [workspace]);
 
     const timeline = useMemo<AcademicEvent[]>(() => {
-        return (workspace?.timeline ?? []).map((item) => ({
+        const movements: AcademicEvent[] = (workspace?.timeline ?? []).map((item) => ({
             id: item.id,
             type: item.type === "ALERTA" ? "alert" : "delivery",
             title: item.title,
@@ -32,6 +32,21 @@ export const useAcademicHistory = (_estudianteId?: number) => {
             date: item.date,
             status: item.status ?? "ALERTA",
         }));
+
+        const pendingActivities: AcademicEvent[] = (workspace?.activities ?? [])
+            .filter((activity) => activity.status === "PENDIENTE" || activity.status === "VENCIDA")
+            .map((activity) => ({
+                id: `activity-${activity.id}`,
+                type: "activity",
+                title: activity.title,
+                subtitle: `${activity.courseName} - ${activity.sectionName}`,
+                date: activity.dueDate,
+                status: activity.status,
+            }));
+
+        return [...movements, ...pendingActivities].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
     }, [workspace]);
 
     const dashboard = useMemo<AcademicDashboardSummary | null>(() => {
