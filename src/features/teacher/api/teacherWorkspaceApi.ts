@@ -9,6 +9,7 @@ import type {
     StatItem,
 } from "../data/teacherDashboardData";
 import api from "../../../lib/api";
+import axios from "axios";
 
 type WorkspaceResponse = {
     students: {
@@ -108,5 +109,18 @@ export async function gradeTeacherSubmission(
     deliveryId: number,
     payload: { nota: number; comentario: string }
 ): Promise<void> {
-    await api.put(`/entregas/${deliveryId}/calificar`, payload);
+    try {
+        await api.put(`/entregas/${deliveryId}/calificar`, payload);
+    } catch (error) {
+        if (axios.isAxiosError<{ mensaje?: string; error?: string; detail?: string }>(error)) {
+            const message =
+                error.response?.data?.mensaje ??
+                error.response?.data?.error ??
+                error.response?.data?.detail ??
+                "No se pudo calificar la entrega";
+            throw new Error(message);
+        }
+
+        throw error instanceof Error ? error : new Error("No se pudo calificar la entrega");
+    }
 }
