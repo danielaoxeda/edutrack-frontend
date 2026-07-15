@@ -5,6 +5,7 @@ import {
     CheckCircle2,
     FileText,
     ArrowRight,
+    UploadCloud,
 } from "lucide-react";
 
 import type { ActivityCardProps } from "../../../../types/ui";
@@ -29,10 +30,12 @@ const statusStyles = {
 };
 
 export default function ActivityCard({
+                                         actionLabel = "Ver actividad",
                                          courseName,
                                          title,
                                          deadline,
                                          status,
+                                         onAction,
                                      }: ActivityCardProps) {
 
     const currentStatus = statusStyles[status];
@@ -93,9 +96,14 @@ export default function ActivityCard({
                         {status}
                     </span>
 
-                    <button className="flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-700 transition">
+                    <button
+                        type="button"
+                        onClick={onAction}
+                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 hover:text-blue-700"
+                    >
 
-                        Ver actividad
+                        {status === "Pendiente" || status === "Vencida" ? <UploadCloud size={16} /> : null}
+                        {actionLabel}
 
                         <ArrowRight size={16} />
 

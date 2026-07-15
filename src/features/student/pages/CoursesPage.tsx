@@ -1,20 +1,27 @@
 import { BookOpen, ListTodo } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import StudentLayout from "../layout/StudentLayout";
 import HeroCard from "../components/courses/HeroCard";
 import ProgressCard from "../components/courses/ProgressCard";
 import CourseDetailCard from "../components/courses/CourseDetailCard";
 import ActivityCard from "../components/courses/ActivityCard";
+import ActivitySubmissionModal from "../components/courses/ActivitySubmissionModal";
 
 import {
+    submitStudentActivityDelivery,
     toStudentActivityCard,
     toStudentCourse,
+    type StudentWorkspaceActivity,
 } from "../api/studentWorkspaceApi";
 import { useStudentWorkspace } from "../hooks/useStudentWorkspace";
 
 export default function CoursesPage() {
-    const { workspace, loading, error } = useStudentWorkspace();
+    const { workspace, loading, error, refresh } = useStudentWorkspace();
+    const [selectedActivity, setSelectedActivity] = useState<StudentWorkspaceActivity | null>(null);
+    const [submissionError, setSubmissionError] = useState<string | null>(null);
+    const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const coursesWithStats = useMemo(() => {
         return (workspace?.courses ?? []).map(toStudentCourse);
@@ -31,8 +38,44 @@ export default function CoursesPage() {
     const nextActivity = sortedActivities[0];
 
     const activityCardPropsList = useMemo(() => {
-        return sortedActivities.map(toStudentActivityCard);
+        return sortedActivities.map((activity) => {
+            const cardProps = toStudentActivityCard(activity);
+            return {
+                ...cardProps,
+                actionLabel: activity.delivery ? "Ver entrega" : "Entregar",
+                onAction: () => {
+                    setSubmissionError(null);
+                    setSubmissionSuccess(null);
+                    setSelectedActivity(activity);
+                },
+            };
+        });
     }, [sortedActivities]);
+
+    const handleSubmitDelivery = async (payload: { comentarioAlumno: string; archivoUrl: string }) => {
+        if (!selectedActivity) {
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setSubmissionError(null);
+            const updatedWorkspace = await submitStudentActivityDelivery(selectedActivity.id, payload)
+                .then(() => refresh());
+            const updatedActivity = updatedWorkspace.activities.find((activity) => activity.id === selectedActivity.id);
+
+            if (updatedActivity) {
+                setSelectedActivity(updatedActivity);
+            }
+
+            setSubmissionSuccess("Entrega enviada correctamente. Tu docente ya puede revisarla.");
+            window.setTimeout(() => setSubmissionSuccess(null), 4000);
+        } catch (err) {
+            setSubmissionError(err instanceof Error ? err.message : "No se pudo enviar la actividad");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (error) {
         return (
@@ -161,6 +204,23 @@ export default function CoursesPage() {
                     */}
 
                 </div>
+
+                {submissionSuccess && (
+                    <div className="fixed bottom-6 right-6 z-40 max-w-sm rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 shadow-lg">
+                        {submissionSuccess}
+                    </div>
+                )}
+
+                <ActivitySubmissionModal
+                    activity={selectedActivity}
+                    isSubmitting={isSubmitting}
+                    error={submissionError}
+                    onClose={() => {
+                        setSelectedActivity(null);
+                        setSubmissionError(null);
+                    }}
+                    onSubmit={handleSubmitDelivery}
+                />
 
             </div>
         </StudentLayout>

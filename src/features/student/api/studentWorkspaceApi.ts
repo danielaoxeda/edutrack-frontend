@@ -1,4 +1,5 @@
 import api from "../../../lib/api";
+import axios from "axios";
 import type { ActivityCardProps } from "../../../types/ui";
 import type { StudentCourse } from "../../../types/course";
 
@@ -92,6 +93,25 @@ export interface StudentWorkspaceTimelineItem {
 export async function loadStudentWorkspace() {
     const { data } = await api.get<StudentWorkspace>("/alumno/workspace");
     return data;
+}
+
+export async function submitStudentActivityDelivery(
+    activityId: number,
+    payload: { comentarioAlumno: string; archivoUrl: string }
+) {
+    try {
+        const { data } = await api.post<StudentWorkspaceActivity["delivery"]>(
+            `/alumno/actividades/${activityId}/entrega`,
+            payload
+        );
+        return data;
+    } catch (error) {
+        if (axios.isAxiosError<{ mensaje?: string }>(error)) {
+            throw new Error(error.response?.data?.mensaje ?? "No se pudo enviar la actividad");
+        }
+
+        throw error instanceof Error ? error : new Error("No se pudo enviar la actividad");
+    }
 }
 
 export function toStudentCourse(course: StudentWorkspaceCourse): StudentCourse {

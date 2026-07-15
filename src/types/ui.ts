@@ -4,5 +4,7 @@ export interface ActivityCardProps {
     title: string;             // título de la actividad
     deadline: string;          // fecha límite formateada
     status: 'Pendiente' | 'Entregado' | 'Calificado' | 'Vencida'; // estado de la entrega
+    actionLabel?: string;
+    onAction?: () => void;
     // ... otros campos
 }

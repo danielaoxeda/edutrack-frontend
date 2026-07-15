@@ -9,6 +9,12 @@ export function useStudentWorkspace() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    async function refresh() {
+        const data = await loadStudentWorkspace();
+        setWorkspace(data);
+        return data;
+    }
+
     useEffect(() => {
         let isMounted = true;
 
@@ -39,5 +45,5 @@ export function useStudentWorkspace() {
         };
     }, []);
 
-    return { workspace, loading, error };
+    return { workspace, loading, error, refresh };
 }
