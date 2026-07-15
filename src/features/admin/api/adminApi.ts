@@ -1,4 +1,5 @@
 import api from "../../../lib/api.ts";
+import axios from "axios";
 
 export type AdminOverview = {
     summary: {
@@ -156,11 +157,27 @@ export async function createSection(payload: SectionCreatePayload) {
 }
 
 export async function assignTeacherToSection(payload: TeacherSectionAssignmentPayload) {
-    const { data } = await api.post("/docentes-secciones", payload);
-    return data;
+    try {
+        const { data } = await api.post("/docente-secciones", payload);
+        return data;
+    } catch (error) {
+        throw normalizeAdminApiError(error, "No se pudo asignar el profesor a la seccion");
+    }
 }
 
 export async function enrollStudentInSection(payload: StudentEnrollmentPayload) {
-    const { data } = await api.post("/matriculas", payload);
-    return data;
+    try {
+        const { data } = await api.post("/matriculas", payload);
+        return data;
+    } catch (error) {
+        throw normalizeAdminApiError(error, "No se pudo matricular el estudiante");
+    }
+}
+
+function normalizeAdminApiError(error: unknown, fallback: string) {
+    if (axios.isAxiosError<{ mensaje?: string }>(error)) {
+        return new Error(error.response?.data?.mensaje ?? fallback);
+    }
+
+    return error instanceof Error ? error : new Error(fallback);
 }
