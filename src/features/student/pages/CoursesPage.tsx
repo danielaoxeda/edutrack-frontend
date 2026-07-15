@@ -7,54 +7,31 @@ import ProgressCard from "../components/courses/ProgressCard";
 import CourseDetailCard from "../components/courses/CourseDetailCard";
 import ActivityCard from "../components/courses/ActivityCard";
 
-import { useAuth } from "../../../context/AuthContext";
-import { useActivities } from "../../../hooks/useActivities";
-import { useCourses } from "../../../hooks/useCourses";
-
-import { toActivityCardProps } from "../../../adapters/activityAdapter";
+import {
+    toStudentActivityCard,
+    toStudentCourse,
+} from "../api/studentWorkspaceApi";
+import { useStudentWorkspace } from "../hooks/useStudentWorkspace";
 
 export default function CoursesPage() {
-    const { estudianteId } = useAuth();
-
-    const {
-        courses,
-        loading: coursesLoading,
-        error: coursesError,
-    } = useCourses(estudianteId ?? undefined);
-
-    const {
-        activities,
-        loading: activitiesLoading,
-        error: activitiesError,
-    } = useActivities(estudianteId ?? undefined);
-
-    const loading = coursesLoading || activitiesLoading;
-    const error = coursesError || activitiesError;
+    const { workspace, loading, error } = useStudentWorkspace();
 
     const coursesWithStats = useMemo(() => {
-        return courses.map((course) => ({
-            ...course,
-            actividadesPendientes: activities.filter((activity) => {
-                const activitySeccionId = activity.semanaAcademica?.seccion?.id ?? undefined;
-                const courseSeccionId = course.seccionId ?? undefined;
-
-                return activitySeccionId === courseSeccionId;
-            }).length,
-        }));
-    }, [courses, activities]);
+        return (workspace?.courses ?? []).map(toStudentCourse);
+    }, [workspace]);
 
     const sortedActivities = useMemo(() => {
-        return [...activities].sort(
+        return [...(workspace?.activities ?? [])].sort(
             (a, b) =>
-                new Date(a.fechaLimite).getTime() -
-                new Date(b.fechaLimite).getTime()
+                new Date(a.dueDate).getTime() -
+                new Date(b.dueDate).getTime()
         );
-    }, [activities]);
+    }, [workspace]);
 
     const nextActivity = sortedActivities[0];
 
     const activityCardPropsList = useMemo(() => {
-        return sortedActivities.map(toActivityCardProps);
+        return sortedActivities.map(toStudentActivityCard);
     }, [sortedActivities]);
 
     if (error) {

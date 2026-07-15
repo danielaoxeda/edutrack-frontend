@@ -1,6 +1,12 @@
 import { TrendingUp } from "lucide-react";
 
-function StatsCard() {
+interface Props {
+    averageGrade?: number | null;
+}
+
+function StatsCard({ averageGrade }: Props) {
+    const displayValue = averageGrade == null ? "--" : averageGrade.toFixed(1);
+
     return (
         <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex justify-between">
@@ -10,7 +16,7 @@ function StatsCard() {
                     </p>
 
                     <h3 className="text-5xl font-bold text-blue-700">
-                        4.6
+                        {displayValue}
                     </h3>
                 </div>
 

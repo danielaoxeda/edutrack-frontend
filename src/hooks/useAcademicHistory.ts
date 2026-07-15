@@ -1,95 +1,66 @@
-import { useEffect, useState } from "react";
-import { matriculaService } from "../services/matriculaService";
-import { historyService } from "../services/historyService";
-import {
-    createAcademicSummary,
-    createAcademicStats,
-    createTimeline,
-    createAcademicDashboardSummary
-} from "../adapters/historyAdapter";
+import { useMemo } from "react";
+import { useStudentWorkspace } from "../features/student/hooks/useStudentWorkspace";
 
 import type {
-    AcademicHistory,
-    AcademicDashboardSummary
+    AcademicDashboardSummary,
+    AcademicEvent,
+    AcademicStats,
 } from "../types/academicHistory";
 
-export const useAcademicHistory = (estudianteId?: number) => {
+export const useAcademicHistory = (_estudianteId?: number) => {
+    const { workspace, loading, error } = useStudentWorkspace();
 
-    const [history, setHistory] = useState<AcademicHistory | null>(null);
-    const [dashboard, setDashboard] = useState<AcademicDashboardSummary | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const stats = useMemo<AcademicStats | undefined>(() => {
+        if (!workspace) {
+            return undefined;
+        }
 
-    useEffect(() => {
-
-        if (!estudianteId) return;
-
-        const load = async () => {
-
-            try {
-
-                setLoading(true);
-
-                const matriculas =
-                    await matriculaService.getMatriculasByEstudiante(estudianteId);
-
-                if (!matriculas.length) {
-                    throw new Error("El estudiante no tiene matrícula.");
-                }
-
-                const matricula = matriculas[0];
-
-                const [entregas, alertas] = await Promise.all([
-                    historyService.getDeliveriesByMatricula(matricula.id),
-                    historyService.getAlertsByMatricula(matricula.id)
-                ]);
-
-                const summary = createAcademicSummary(
-                    "Periodo Actual",
-                    entregas,
-                    alertas
-                );
-
-                const stats = createAcademicStats(summary);
-
-                const timeline = createTimeline(entregas, alertas);
-
-                const dashboard = createAcademicDashboardSummary(
-                    entregas,
-                    alertas
-                );
-
-                setHistory({
-                    summary,
-                    stats,
-                    timeline
-                });
-
-                setDashboard(dashboard);
-
-            } catch (err) {
-
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : "Error cargando historial"
-                );
-
-            } finally {
-
-                setLoading(false);
-            }
+        return {
+            entregadas: workspace.summary.deliveredActivities,
+            pendientes: workspace.summary.pendingActivities,
+            alertas: workspace.summary.alertsCount,
+            calificadas: workspace.summary.gradedActivities,
         };
+    }, [workspace]);
 
-        load();
-    }, [estudianteId]);
+    const timeline = useMemo<AcademicEvent[]>(() => {
+        return (workspace?.timeline ?? []).map((item) => ({
+            id: item.id,
+            type: item.type === "ALERTA" ? "alert" : "delivery",
+            title: item.title,
+            subtitle: item.courseName,
+            date: item.date,
+            status: item.status ?? "ALERTA",
+        }));
+    }, [workspace]);
+
+    const dashboard = useMemo<AcademicDashboardSummary | null>(() => {
+        if (!workspace) {
+            return null;
+        }
+
+        return {
+            totalEntregas: workspace.summary.deliveredActivities,
+            entregasRevisadas: workspace.summary.gradedActivities,
+            totalAlertas: workspace.summary.alertsCount,
+            ultimaActividad: timeline[0]
+                ? new Date(timeline[0].date).toLocaleDateString("es-PE", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                })
+                : "Sin actividad",
+            estado: workspace.summary.alertsCount > 0 ? "Con alertas" : "Normal",
+            promedioGeneral: workspace.summary.averageGrade ?? 0,
+        };
+    }, [workspace, timeline]);
 
     return {
         summary: dashboard,
-        stats: history?.stats,
-        timeline: history?.timeline ?? [],
+        stats,
+        timeline,
         dashboard,
         loading,
-        error
+        error,
     };
 };

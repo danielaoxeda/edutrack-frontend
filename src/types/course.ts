@@ -1,5 +1,6 @@
 export interface StudentCourse {
     id: number;
+    matriculaId?: number;
     codigo: string;
     nombre: string;
     descripcion: string;
@@ -11,4 +12,7 @@ export interface StudentCourse {
     docente?: string;
     nextActivityTitle?: string;
     nextActivityDate?: string;
+    progress?: number;
+    averageGrade?: number | null;
+    attendancePercent?: number | null;
 }

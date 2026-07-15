@@ -6,11 +6,11 @@ import {
 } from "lucide-react";
 
 import type { StudentCourse } from "../../../../types/course";
-import type { Actividad } from "../../../../types/activity";
+import type { StudentWorkspaceActivity } from "../../api/studentWorkspaceApi";
 
 interface HeroCardProps {
     courses: StudentCourse[];
-    nextActivity?: Actividad;
+    nextActivity?: StudentWorkspaceActivity;
 }
 
 export default function HeroCard({
@@ -98,14 +98,13 @@ export default function HeroCard({
 
                                 <h3 className="mt-3 text-xl font-bold">
 
-                                    {nextActivity.titulo}
+                                    {nextActivity.title}
 
                                 </h3>
 
                                 <p className="mt-1 text-blue-100">
 
-                                    {nextActivity.semanaAcademica?.seccion?.curso?.nombre ??
-                                        "Curso"}
+                                    {nextActivity.courseName}
 
                                 </p>
 
@@ -114,7 +113,7 @@ export default function HeroCard({
                                     <Clock3 size={16} />
 
                                     {new Date(
-                                        nextActivity.fechaLimite
+                                        nextActivity.dueDate
                                     ).toLocaleDateString("es-PE", {
                                         day: "numeric",
                                         month: "long",

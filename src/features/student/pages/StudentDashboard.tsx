@@ -11,6 +11,7 @@ import { useStudentDashboard } from "../../../hooks/useStudentDashboard";
 function Dashboard() {
 
     const {
+        summary,
         courses,
         assignments,
         loading,
@@ -23,8 +24,8 @@ function Dashboard() {
 
                 {/* TOP CARDS */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <StatsCard />
-                    <AttendanceCard />
+                    <StatsCard averageGrade={summary?.averageGrade} />
+                    <AttendanceCard attendancePercent={summary?.attendancePercent} />
                     <QuickActions />
                 </div>
 

@@ -22,6 +22,10 @@ const statusStyles = {
         badge: "bg-blue-100 text-blue-700",
         icon: FileText,
     },
+    Vencida: {
+        badge: "bg-rose-100 text-rose-700",
+        icon: Clock3,
+    },
 };
 
 export default function ActivityCard({

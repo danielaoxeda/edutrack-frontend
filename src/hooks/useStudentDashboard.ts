@@ -1,62 +1,40 @@
-import { useEffect, useState } from "react";
-import { studentService } from "../services/studentService";
+import { useMemo } from "react";
+import {
+    toStudentActivityCard,
+} from "../features/student/api/studentWorkspaceApi";
+import { useStudentWorkspace } from "../features/student/hooks/useStudentWorkspace";
 
 export const useStudentDashboard = () => {
+    const { workspace, loading, error } = useStudentWorkspace();
 
-    const [courses, setCourses] = useState<any[]>([]);
-    const [assignments, setAssignments] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const courses = useMemo(() => {
+        return (workspace?.courses ?? []).map((course) => ({
+            id: course.courseId,
+            title: course.name,
+            professor: course.teacherName,
+            progress: course.progress,
+            color: "bg-blue-500",
+        }));
+    }, [workspace]);
 
-    useEffect(() => {
-
-        const load = async () => {
-
-            try {
-
-                setLoading(true);
-
-                const [coursesData, assignmentsData] = await Promise.all([
-                    studentService.getCourses(),
-                    studentService.getAssignments()
-                ]);
-
-                const mappedCourses = coursesData.map((c: any) => ({
-                    id: c.id,
-                    title: c.nombre,
-                    professor: c.docente,
-                    progress: c.progreso ?? 0,
-                    color: "bg-blue-500"
-                }));
-
-                const mappedAssignments = assignmentsData.map((a: any) => ({
-                    id: a.id,
-                    title: a.titulo,
-                    subject: a.tipo,
-                    date: a.fechaLimite
-                        ? new Date(a.fechaLimite).toLocaleDateString()
-                        : "",
-                    priority: a.prioridad ?? "Media"
-                }));
-
-                setCourses(mappedCourses);
-                setAssignments(mappedAssignments);
-
-            } catch (err) {
-
-                setError(err instanceof Error ? err.message : "Error dashboard");
-
-            } finally {
-
-                setLoading(false);
-            }
-        };
-
-        load();
-
-    }, []);
+    const assignments = useMemo(() => {
+        return (workspace?.activities ?? [])
+            .filter((activity) => activity.status === "PENDIENTE" || activity.status === "VENCIDA")
+            .slice(0, 5)
+            .map((activity) => {
+                const card = toStudentActivityCard(activity);
+                return {
+                    id: card.id,
+                    title: card.title,
+                    subject: activity.courseName,
+                    date: card.deadline,
+                    priority: card.status,
+                };
+            });
+    }, [workspace]);
 
     return {
+        summary: workspace?.summary,
         courses,
         assignments,
         loading,
