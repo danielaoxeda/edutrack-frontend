@@ -4,7 +4,7 @@ import TaskStatsGrid from "../components/tasks/TaskStatsGrid";
 import TaskTable from "../components/tasks/TaskTable";
 import TaskSubPanels from "../components/tasks/TaskSubPanels";
 import { TaskQuickActionsCard, UrgentTasksCard } from "../components/tasks/TaskSidebarWidgets";
-import { loadTeacherWorkspace } from "../api/teacherWorkspaceApi";
+import { gradeTeacherSubmission, loadTeacherWorkspace } from "../api/teacherWorkspaceApi";
 import {
     createTeacherActivity,
     loadTeacherActivityOptions,
@@ -13,6 +13,7 @@ import {
 } from "../api/teacherWorkspaceApi";
 import CreateActivityModal from "../components/courses/CreateActivityModal";
 import type { StatItem, TaskItem, RecentSubmissionItem, UrgentTaskItem } from "../data/teacherDashboardData";
+import GradeSubmissionModal from "../components/tasks/GradeSubmissionModal";
 
 function TeacherTasks() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -28,6 +29,9 @@ function TeacherTasks() {
     const [activityModalOpen, setActivityModalOpen] = useState(false);
     const [activityOptions, setActivityOptions] = useState<TeacherActivityOption[]>([]);
     const [savingActivity, setSavingActivity] = useState(false);
+    const [selectedSubmission, setSelectedSubmission] = useState<RecentSubmissionItem | null>(null);
+    const [gradingError, setGradingError] = useState<string | null>(null);
+    const [savingGrade, setSavingGrade] = useState(false);
 
     useEffect(() => {
         let alive = true;
@@ -55,6 +59,14 @@ function TeacherTasks() {
         };
     }, []);
 
+    const refreshWorkspace = async () => {
+        const workspace = await loadTeacherWorkspace();
+        setTasks(workspace.tasks.tasks);
+        setRecentSubmissions(workspace.tasks.recentSubmissions);
+        setUrgentTasks(workspace.tasks.urgentTasks);
+        setStats(workspace.tasks.stats);
+    };
+
     const openActivityModal = async () => {
         setError(null);
         try {
@@ -75,17 +87,41 @@ function TeacherTasks() {
         setError(null);
         try {
             await createTeacherActivity(payload);
-            const workspace = await loadTeacherWorkspace();
-            setTasks(workspace.tasks.tasks);
-            setRecentSubmissions(workspace.tasks.recentSubmissions);
-            setUrgentTasks(workspace.tasks.urgentTasks);
-            setStats(workspace.tasks.stats);
+            await refreshWorkspace();
             setFeedback("Tarea publicada correctamente.");
             setActivityModalOpen(false);
         } catch (err) {
             setError(err instanceof Error ? err.message : "No se pudo crear la tarea");
         } finally {
             setSavingActivity(false);
+        }
+    };
+
+    const handleGradeSubmission = async (payload: { nota: number; comentario: string }) => {
+        if (!selectedSubmission?.deliveryId) {
+            setGradingError("No se encontro la entrega seleccionada.");
+            return;
+        }
+
+        const maxGrade = selectedSubmission.maxGrade ?? 5;
+
+        if (Number.isNaN(payload.nota) || payload.nota < 0 || payload.nota > maxGrade) {
+            setGradingError(`La nota debe estar entre 0 y ${maxGrade}.`);
+            return;
+        }
+
+        try {
+            setSavingGrade(true);
+            setGradingError(null);
+            await gradeTeacherSubmission(selectedSubmission.deliveryId, payload);
+            await refreshWorkspace();
+            setSelectedSubmission(null);
+            setFeedback("Entrega calificada correctamente.");
+            window.setTimeout(() => setFeedback(null), 4000);
+        } catch (err) {
+            setGradingError(err instanceof Error ? err.message : "No se pudo calificar la entrega");
+        } finally {
+            setSavingGrade(false);
         }
     };
 
@@ -141,7 +177,14 @@ function TeacherTasks() {
                                     courseOptions={Array.from(new Set(tasks.map((task) => task.course))).sort()}
                                 />
 
-                                <TaskSubPanels recentSubmissions={recentSubmissions} urgentTasks={urgentTasks} />
+                                <TaskSubPanels
+                                    recentSubmissions={recentSubmissions}
+                                    urgentTasks={urgentTasks}
+                                    onReviewSubmission={(submission) => {
+                                        setGradingError(null);
+                                        setSelectedSubmission(submission);
+                                    }}
+                                />
                             </div>
 
                             <div className="lg:col-span-1 space-y-6">
@@ -161,6 +204,17 @@ function TeacherTasks() {
                         onSubmit={handleCreateActivity}
                     />
                 )}
+
+                <GradeSubmissionModal
+                    submission={selectedSubmission}
+                    saving={savingGrade}
+                    error={gradingError}
+                    onClose={() => {
+                        setSelectedSubmission(null);
+                        setGradingError(null);
+                    }}
+                    onSubmit={handleGradeSubmission}
+                />
             </div>
         </TeacherLayout>
     );

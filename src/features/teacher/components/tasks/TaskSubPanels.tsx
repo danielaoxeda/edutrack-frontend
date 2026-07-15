@@ -1,12 +1,13 @@
-import { Clock, GraduationCap } from "lucide-react";
+import { CheckCircle2, Clock, GraduationCap } from "lucide-react";
 import type { RecentSubmissionItem, UrgentTaskItem } from "../../data/teacherDashboardData";
 
 interface TaskSubPanelsProps {
     recentSubmissions: RecentSubmissionItem[];
     urgentTasks: UrgentTaskItem[];
+    onReviewSubmission: (submission: RecentSubmissionItem) => void;
 }
 
-function TaskSubPanels({ recentSubmissions, urgentTasks }: TaskSubPanelsProps) {
+function TaskSubPanels({ recentSubmissions, urgentTasks, onReviewSubmission }: TaskSubPanelsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
@@ -32,9 +33,21 @@ function TaskSubPanels({ recentSubmissions, urgentTasks }: TaskSubPanelsProps) {
                                     </span>
                                 </div>
                             </div>
-                            <span className="text-[10px] font-bold text-slate-400 shrink-0 whitespace-nowrap bg-slate-100 px-2 py-0.5 rounded">
-                                {sub.timeAgo}
-                            </span>
+                            <div className="flex shrink-0 items-center gap-2">
+                                <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-0.5 rounded">
+                                    {sub.timeAgo}
+                                </span>
+                                {sub.deliveryId && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onReviewSubmission(sub)}
+                                        className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wide text-white shadow-sm transition hover:bg-blue-700"
+                                    >
+                                        <CheckCircle2 size={13} />
+                                        Revisar
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

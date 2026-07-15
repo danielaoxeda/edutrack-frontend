@@ -58,13 +58,8 @@ export default function AcademicHistoryPage() {
             setIsSubmitting(true);
             setSubmissionError(null);
             await submitStudentActivityDelivery(selectedActivity.id, payload);
-            const updatedWorkspace = await refresh();
-            const updatedActivity = updatedWorkspace.activities.find((activity) => activity.id === selectedActivity.id);
-
-            if (updatedActivity) {
-                setSelectedActivity(updatedActivity);
-            }
-
+            await refresh();
+            setSelectedActivity(null);
             setSubmissionSuccess("Entrega enviada correctamente. Tu historial ya fue actualizado.");
             window.setTimeout(() => setSubmissionSuccess(null), 4000);
         } catch (err) {

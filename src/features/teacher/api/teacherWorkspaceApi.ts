@@ -103,3 +103,10 @@ export async function loadTeacherActivityOptions(): Promise<TeacherActivityOptio
 export async function createTeacherActivity(payload: TeacherActivityPayload): Promise<void> {
     await api.post("/docente/actividades", payload);
 }
+
+export async function gradeTeacherSubmission(
+    deliveryId: number,
+    payload: { nota: number; comentario: string }
+): Promise<void> {
+    await api.put(`/entregas/${deliveryId}/calificar`, payload);
+}

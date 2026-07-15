@@ -60,14 +60,9 @@ export default function CoursesPage() {
         try {
             setIsSubmitting(true);
             setSubmissionError(null);
-            const updatedWorkspace = await submitStudentActivityDelivery(selectedActivity.id, payload)
-                .then(() => refresh());
-            const updatedActivity = updatedWorkspace.activities.find((activity) => activity.id === selectedActivity.id);
-
-            if (updatedActivity) {
-                setSelectedActivity(updatedActivity);
-            }
-
+            await submitStudentActivityDelivery(selectedActivity.id, payload);
+            await refresh();
+            setSelectedActivity(null);
             setSubmissionSuccess("Entrega enviada correctamente. Tu docente ya puede revisarla.");
             window.setTimeout(() => setSubmissionSuccess(null), 4000);
         } catch (err) {

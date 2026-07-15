@@ -82,10 +82,17 @@ export interface TaskItem {
 
 export interface RecentSubmissionItem {
     id: string;
+    deliveryId?: number;
     studentName: string;
     taskName: string;
     courseName: string;
     timeAgo: string;
+    status?: string;
+    maxGrade?: number;
+    grade?: number | null;
+    studentComment?: string | null;
+    teacherComment?: string | null;
+    fileUrl?: string | null;
 }
 
 export interface UrgentTaskItem {
