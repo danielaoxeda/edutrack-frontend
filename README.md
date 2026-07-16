@@ -33,7 +33,6 @@ frontend, que consume la API REST de EduTrack.
 | React Router     | Navegación en el cliente       |
 | Axios            | Cliente HTTP para llamadas a API |
 | Context API      | Gestión de autenticación y estado global |
-| GCP App Engine   | Despliegue en la nube         |
 
 ## 🚀 Cómo empezar
 
